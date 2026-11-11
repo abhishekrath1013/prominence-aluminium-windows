@@ -1,0 +1,582 @@
+---
+import { finishes } from "../data/finishes";
+import { company } from "../data/company";
+
+// A short, curated set from the real fan chart.
+const pick = ["Noir", "Slate", "Urban Mist", "Frost", "Cedar", "Urban Dusk", "Caramel", "Duke", "Citrine", "Royal Chestnut"];
+const swatches = pick.map((n) => finishes.find((f) => f.name === n)).filter(Boolean) as typeof finishes;
+
+const purposes = ["A new villa or home", "A renovation", "An apartment", "A hotel or commercial space", "I'm an architect or designer"];
+const systems = [
+  { v: "Sliding · Graf", d: "Vast, concealed-frame glass" },
+  { v: "Casement · Livio", d: "Slim, flush, airtight" },
+  { v: "Fold & Slide · Robus 40", d: "Walls that fold away" },
+  { v: "Bay windows", d: "Angled, panoramic" },
+  { v: "Full View glazing", d: "Fixed, frameless-feel" },
+  { v: "Facade & skylights", d: "Structural glazing" },
+  { v: "Not sure — guide me", d: "We'll walk you through" },
+];
+---
+
+<div class="cc grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-14" data-cc data-phone={company.phoneDisplay} data-email={company.email}>
+  <!-- ============ the invitation: updates live as you answer ============ -->
+  <aside class="md:col-span-5">
+    <div class="cc-card md:sticky md:top-28" data-cc-card>
+      <video class="cc-card-video" data-src="/media/stock/hero-default.mp4" poster="/media/stock/hero-default.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
+      <div class="cc-card-veil"></div>
+      <div class="cc-card-body">
+        <div class="flex items-start justify-between">
+          <p class="label-eyebrow text-champagne">Private appointment</p>
+          <p class="label-eyebrow text-ivory/55">N° <span data-cc-no>001</span></p>
+        </div>
+        <p class="mt-6 font-display text-[clamp(1.9rem,3vw,2.6rem)] font-light leading-[1.05]">
+          <span data-cc-greet>An invitation to the studio</span>
+        </p>
+
+        <dl class="cc-rows mt-8">
+          <div><dt>Visiting for</dt><dd data-cc-v="purpose">—</dd></div>
+          <div><dt>To experience</dt><dd data-cc-v="systems">—</dd></div>
+          <div><dt>Finish</dt><dd data-cc-v="finish">—</dd></div>
+          <div><dt>When</dt><dd data-cc-v="when">—</dd></div>
+        </dl>
+
+        <div class="mt-8 border-t border-ivory/15 pt-5 text-xs leading-relaxed text-ivory/55">
+          <p>{company.addressLine1}</p>
+          <p>{company.addressLine2}</p>
+          <p class="mt-2">
+            Prefer to speak? <a href={company.phoneHref} class="text-ivory underline decoration-champagne/50 underline-offset-4">{company.phoneDisplay}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ the guided questions ============ -->
+  <form class="cc-form md:col-span-7" data-cc-form novalidate>
+    <div class="flex items-center justify-between">
+      <p class="label-eyebrow text-ivory/55">Step <span class="text-champagne" data-cc-step-no>01</span> / 05</p>
+      <p class="label-eyebrow text-ivory/35">About two minutes</p>
+    </div>
+    <div class="cc-progress mt-4"><span data-cc-bar></span></div>
+
+    <div class="cc-steps mt-10" data-cc-steps>
+      <!-- 1 -->
+      <section class="cc-step" data-step="1">
+        <h3 class="cc-q">What brings you to the studio?</h3>
+        <div class="cc-tiles mt-8" data-name="purpose" data-mode="single">
+          {purposes.map((p) => <button type="button" class="cc-tile" data-value={p} aria-pressed="false"><span>{p}</span></button>)}
+        </div>
+      </section>
+
+      <!-- 2 -->
+      <section class="cc-step" data-step="2" hidden>
+        <h3 class="cc-q">Which systems would you like to experience?</h3>
+        <p class="cc-hint">Choose as many as you like.</p>
+        <div class="cc-tiles mt-6 sm:grid-cols-2" data-name="systems" data-mode="multi">
+          {systems.map((s) => <button type="button" class="cc-tile" data-value={s.v} aria-pressed="false"><span>{s.v}</span><em>{s.d}</em></button>)}
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section class="cc-step" data-step="3" hidden>
+        <h3 class="cc-q">Is there a finish you are drawn to?</h3>
+        <p class="cc-hint">We will have it laid out for you to hold against daylight.</p>
+        <div class="mt-8 flex flex-wrap gap-4" data-name="finish" data-mode="single">
+          {
+            swatches.map((f) => (
+              <button type="button" class="cc-swatch" data-value={f.name} aria-pressed="false" aria-label={f.name} title={f.name} style={`--c:${f.swatch}`}>
+                <i></i>
+                <span>{f.name}</span>
+              </button>
+            ))
+          }
+          <button type="button" class="cc-swatch cc-swatch-text" data-value="Show me everything" aria-pressed="false"><i>∞</i><span>Show me everything</span></button>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section class="cc-step" data-step="4" hidden>
+        <h3 class="cc-q">When shall we welcome you?</h3>
+        <p class="cc-hint">We will confirm the exact time with you personally.</p>
+        <div class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
+          <label class="cc-field">
+            <span>Preferred date</span>
+            <input type="date" name="date" data-cc-date />
+          </label>
+          <div>
+            <span class="cc-field-label">Time of day</span>
+            <div class="mt-3 flex flex-wrap gap-2" data-name="slot" data-mode="single">
+              {["Morning", "Afternoon", "Flexible"].map((t) => <button type="button" class="cc-chip" data-value={t} aria-pressed="false">{t}</button>)}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5 -->
+      <section class="cc-step" data-step="5" hidden>
+        <h3 class="cc-q">How may we address you?</h3>
+        <div class="mt-8 grid grid-cols-1 gap-x-8 gap-y-7 sm:grid-cols-2">
+          <label class="cc-field"><span>Name</span><input type="text" name="name" autocomplete="name" required /></label>
+          <label class="cc-field"><span>Phone</span><input type="tel" name="phone" autocomplete="tel" /></label>
+          <label class="cc-field sm:col-span-2"><span>Email</span><input type="email" name="email" autocomplete="email" required /></label>
+          <label class="cc-field sm:col-span-2"><span>Anything we should prepare? <em>(optional)</em></span><textarea name="note" rows="2"></textarea></label>
+        </div>
+        <p class="cc-error" data-cc-error role="alert"></p>
+      </section>
+    </div>
+
+    <div class="mt-10 flex items-center justify-between gap-6">
+      <button type="button" class="cc-back label-eyebrow" data-cc-back hidden>← Back</button>
+      <div class="ml-auto flex items-center gap-5">
+        <button type="button" class="cc-skip label-eyebrow" data-cc-skip hidden>Skip</button>
+        <button type="button" class="btn-lux label-eyebrow" data-cc-next>Continue</button>
+      </div>
+    </div>
+
+    <!-- confirmation -->
+    <div class="cc-done" data-cc-done hidden>
+      <p class="label-eyebrow text-champagne">Request prepared</p>
+      <h3 class="cc-q mt-4">Thank you, <span data-cc-name>friend</span>.</h3>
+      <p class="mt-5 max-w-md text-sm leading-relaxed text-ivory/65">
+        Your email app has opened with your invitation request — press send and our team will call to confirm your visit.
+        If nothing opened, write to <a class="text-ivory underline decoration-champagne/50 underline-offset-4" href={`mailto:${company.email}`}>{company.email}</a>
+        or call <a class="text-ivory underline decoration-champagne/50 underline-offset-4" href={company.phoneHref}>{company.phoneDisplay}</a>.
+      </p>
+      <button type="button" class="link-underline label-eyebrow mt-8" data-cc-again>Start a new request</button>
+    </div>
+  </form>
+</div>
+
+<style is:global>
+  .cc-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(201 169 107 / 0.35);
+    background: #0e0e10;
+  }
+  .cc-card-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.55;
+  }
+  .cc-card-veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgb(10 10 11 / 0.55), rgb(10 10 11 / 0.9));
+  }
+  .cc-card-body {
+    position: relative;
+    padding: clamp(1.4rem, 2.4vw, 2.2rem);
+  }
+  .cc-rows > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.8rem 0;
+    border-top: 1px solid rgb(241 236 226 / 0.14);
+    font-size: 0.85rem;
+  }
+  .cc-rows dt {
+    flex: none;
+    font-size: 0.66rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgb(241 236 226 / 0.45);
+    padding-top: 0.15rem;
+  }
+  .cc-rows dd {
+    text-align: right;
+    color: rgb(241 236 226 / 0.9);
+    transition: color 0.4s ease;
+  }
+  .cc-rows dd.is-set {
+    color: var(--color-champagne-soft);
+  }
+
+  .cc-progress {
+    height: 1px;
+    background: rgb(241 236 226 / 0.18);
+  }
+  .cc-progress span {
+    display: block;
+    height: 1px;
+    width: 20%;
+    background: var(--color-champagne);
+    box-shadow: 0 0 10px rgb(236 200 112 / 0.7);
+    transition: width 0.8s var(--ease-lux);
+  }
+  .cc-q {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.9rem, 3.6vw, 3.1rem);
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .cc-hint {
+    margin-top: 0.9rem;
+    font-size: 0.85rem;
+    color: rgb(241 236 226 / 0.5);
+  }
+  .cc-step {
+    animation: cc-in 0.7s var(--ease-lux) both;
+  }
+  @keyframes cc-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .cc-tiles {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+  @media (min-width: 640px) {
+    .cc-tiles.sm\:grid-cols-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .cc-tile {
+    position: relative;
+    text-align: left;
+    padding: 1.05rem 1.3rem;
+    border: 1px solid rgb(241 236 226 / 0.2);
+    color: var(--color-ivory);
+    transition: border-color 0.4s ease, background-color 0.4s ease, transform 0.5s var(--ease-lux);
+  }
+  .cc-tile span {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+  .cc-tile em {
+    display: block;
+    margin-top: 0.3rem;
+    font-style: normal;
+    font-size: 0.76rem;
+    color: rgb(241 236 226 / 0.48);
+  }
+  .cc-tile:hover {
+    border-color: var(--color-champagne);
+    transform: translateX(4px);
+  }
+  .cc-tile[aria-pressed="true"] {
+    border-color: var(--color-champagne);
+    background: linear-gradient(100deg, rgb(201 169 107 / 0.2), rgb(201 169 107 / 0.04));
+  }
+  .cc-tile[aria-pressed="true"]::after {
+    content: "";
+    position: absolute;
+    right: 1.2rem;
+    top: 50%;
+    width: 7px;
+    height: 12px;
+    margin-top: -8px;
+    border-right: 1.5px solid var(--color-champagne-soft);
+    border-bottom: 1.5px solid var(--color-champagne-soft);
+    transform: rotate(40deg);
+  }
+
+  .cc-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    width: 78px;
+    color: rgb(241 236 226 / 0.6);
+    transition: color 0.3s ease;
+  }
+  .cc-swatch i {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 999px;
+    font-style: normal;
+    font-size: 1.4rem;
+    background: var(--c, transparent);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+    outline: 1px solid transparent;
+    outline-offset: 4px;
+    transition: outline-color 0.3s ease, transform 0.5s var(--ease-lux);
+  }
+  .cc-swatch-text i {
+    border: 1px dashed rgb(241 236 226 / 0.4);
+    box-shadow: none;
+    color: var(--color-champagne);
+  }
+  .cc-swatch span {
+    font-size: 0.7rem;
+    text-align: center;
+    line-height: 1.25;
+  }
+  .cc-swatch:hover i {
+    transform: scale(1.08);
+  }
+  .cc-swatch[aria-pressed="true"] {
+    color: var(--color-ivory);
+  }
+  .cc-swatch[aria-pressed="true"] i {
+    outline-color: var(--color-champagne);
+  }
+
+  .cc-chip {
+    padding: 0.7rem 1.2rem;
+    border: 1px solid rgb(241 236 226 / 0.25);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ivory);
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  }
+  .cc-chip[aria-pressed="true"] {
+    background: var(--color-champagne);
+    border-color: var(--color-champagne);
+    color: var(--color-ink);
+  }
+  .cc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .cc-field > span,
+  .cc-field-label {
+    font-size: 0.66rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--color-champagne);
+  }
+  .cc-field > span em {
+    font-style: normal;
+    opacity: 0.55;
+    letter-spacing: 0.1em;
+  }
+  .cc-field input,
+  .cc-field textarea {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgb(241 236 226 / 0.28);
+    padding-block: 0.6rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--color-ivory);
+    resize: none;
+    color-scheme: dark;
+    transition: border-color 0.4s ease;
+  }
+  .cc-field input:focus,
+  .cc-field textarea:focus {
+    outline: none;
+    border-color: var(--color-champagne);
+  }
+  .cc-error {
+    min-height: 1.2rem;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #e8a98a;
+  }
+  .cc-back,
+  .cc-skip {
+    color: rgb(241 236 226 / 0.55);
+    transition: color 0.3s ease;
+  }
+  .cc-back:hover,
+  .cc-skip:hover {
+    color: var(--color-champagne);
+  }
+  .cc-done {
+    animation: cc-in 0.9s var(--ease-lux) both;
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-cc]");
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>("[data-cc-form]")!;
+    const steps = Array.from(root.querySelectorAll<HTMLElement>("[data-step]"));
+    const bar = root.querySelector<HTMLElement>("[data-cc-bar]")!;
+    const stepNo = root.querySelector<HTMLElement>("[data-cc-step-no]")!;
+    const next = root.querySelector<HTMLButtonElement>("[data-cc-next]")!;
+    const back = root.querySelector<HTMLButtonElement>("[data-cc-back]")!;
+    const skip = root.querySelector<HTMLButtonElement>("[data-cc-skip]")!;
+    const err = root.querySelector<HTMLElement>("[data-cc-error]")!;
+    const done = root.querySelector<HTMLElement>("[data-cc-done]")!;
+    const greet = root.querySelector<HTMLElement>("[data-cc-greet]")!;
+    const noEl = root.querySelector<HTMLElement>("[data-cc-no]")!;
+    const dateEl = root.querySelector<HTMLInputElement>("[data-cc-date]")!;
+    const video = root.querySelector<HTMLVideoElement>(".cc-card-video");
+
+    const state: Record<string, string | string[]> = { purpose: "", systems: [], finish: "", slot: "" };
+    let cur = 0;
+    // a quiet, stable-looking appointment number for this visit
+    noEl.textContent = String(100 + Math.floor(Math.random() * 899));
+
+    // date: from tomorrow
+    const tmr = new Date(Date.now() + 864e5);
+    dateEl.min = tmr.toISOString().slice(0, 10);
+
+    const fmtDate = (v: string) => {
+      if (!v) return "";
+      const d = new Date(v + "T00:00:00");
+      return d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+    };
+
+    function summary() {
+      const set = (k: string, text: string) => {
+        const el = root!.querySelector<HTMLElement>(`[data-cc-v="${k}"]`)!;
+        el.textContent = text || "—";
+        el.classList.toggle("is-set", !!text);
+      };
+      set("purpose", state.purpose as string);
+      const sys = state.systems as string[];
+      set("systems", sys.length > 2 ? `${sys[0].split(" · ")[0]}, ${sys[1].split(" · ")[0]} +${sys.length - 2}` : sys.map((s) => s.split(" · ")[0]).join(", "));
+      set("finish", state.finish as string);
+      const when = [fmtDate(dateEl.value), state.slot as string].filter(Boolean).join(" · ");
+      set("when", when);
+    }
+
+    // tiles / swatches / chips
+    root.querySelectorAll<HTMLElement>("[data-name]").forEach((group) => {
+      const name = group.dataset.name!;
+      const multi = group.dataset.mode === "multi";
+      group.addEventListener("click", (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-value]");
+        if (!btn) return;
+        const val = btn.dataset.value!;
+        if (multi) {
+          const arr = state[name] as string[];
+          const i = arr.indexOf(val);
+          if (i >= 0) arr.splice(i, 1);
+          else arr.push(val);
+          btn.setAttribute("aria-pressed", String(i < 0));
+        } else {
+          const was = state[name] === val;
+          state[name] = was ? "" : val;
+          group.querySelectorAll("[data-value]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+          if (!was) btn.setAttribute("aria-pressed", "true");
+        }
+        err.textContent = "";
+        summary();
+        // single-choice first step feels better when it advances itself
+        if (!multi && name === "purpose" && state.purpose) window.setTimeout(() => go(1), 380);
+      });
+    });
+    dateEl.addEventListener("change", summary);
+
+    const inputVal = (n: string) => (form.elements.namedItem(n) as HTMLInputElement | null)?.value.trim() ?? "";
+    form.addEventListener("input", () => {
+      const nm = inputVal("name");
+      greet.textContent = nm ? `For ${nm.split(" ")[0]}, with pleasure` : "An invitation to the studio";
+    });
+
+    function show(i: number) {
+      cur = i;
+      steps.forEach((s, k) => {
+        s.hidden = k !== i;
+        if (k === i) {
+          s.style.animation = "none";
+          void s.offsetWidth;
+          s.style.animation = "";
+        }
+      });
+      stepNo.textContent = String(i + 1).padStart(2, "0");
+      bar.style.width = `${((i + 1) / steps.length) * 100}%`;
+      back.hidden = i === 0;
+      skip.hidden = !(i >= 1 && i <= 3);
+      next.textContent = i === steps.length - 1 ? "Request my private visit" : "Continue";
+      err.textContent = "";
+      if (i === 0) next.hidden = false;
+    }
+
+    function validate(i: number): boolean {
+      if (i === 0 && !state.purpose) {
+        err.textContent = "";
+        next.animate([{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" }, { transform: "none" }], { duration: 300 });
+        return false;
+      }
+      if (i === 4) {
+        const nm = inputVal("name");
+        const em = inputVal("email");
+        const ph = inputVal("phone");
+        if (!nm) return (err.textContent = "Please tell us your name."), false;
+        if (!em && !ph) return (err.textContent = "Please share an email or a phone number so we can reach you."), false;
+        if (em && !/^\S+@\S+\.\S+$/.test(em)) return (err.textContent = "That email doesn't look quite right."), false;
+      }
+      return true;
+    }
+
+    function go(delta: number) {
+      const n = cur + delta;
+      if (delta > 0 && !validate(cur)) return;
+      if (n < 0) return;
+      if (n >= steps.length) return submit();
+      show(n);
+    }
+
+    function submit() {
+      const nm = inputVal("name");
+      const lines = [
+        `Name: ${nm}`,
+        `Phone: ${inputVal("phone") || "—"}`,
+        `Email: ${inputVal("email") || "—"}`,
+        "",
+        `Visiting for: ${state.purpose || "—"}`,
+        `Systems of interest: ${(state.systems as string[]).join(", ") || "—"}`,
+        `Finish: ${state.finish || "—"}`,
+        `Preferred date: ${fmtDate(dateEl.value) || "—"} (${state.slot || "no preference"})`,
+        "",
+        inputVal("note") ? `Note: ${inputVal("note")}` : "",
+      ].filter((l, k, a) => !(l === "" && a[k - 1] === ""));
+      const subject = encodeURIComponent(`Private studio visit — ${nm}`);
+      const body = encodeURIComponent(lines.join("\n"));
+      window.location.href = `mailto:${root!.dataset.email}?subject=${subject}&body=${body}`;
+      Array.from(form.children).forEach((c) => ((c as HTMLElement).hidden = c !== done));
+      done.hidden = false;
+      (root!.querySelector("[data-cc-name]") as HTMLElement).textContent = nm.split(" ")[0] || "friend";
+    }
+
+    next.addEventListener("click", () => go(1));
+    back.addEventListener("click", () => go(-1));
+    skip.addEventListener("click", () => go(1));
+    form.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+        e.preventDefault();
+        go(1);
+      }
+    });
+    root.querySelector("[data-cc-again]")?.addEventListener("click", () => window.location.reload());
+
+    // the card's film plays only once the section is near
+    if (video) {
+      new IntersectionObserver(
+        (es) => {
+          es.forEach((en) => {
+            if (en.isIntersecting) {
+              if (!video.src && video.dataset.src) {
+                video.src = video.dataset.src;
+                video.load();
+              }
+              video.play().catch(() => {});
+            } else video.pause();
+          });
+        },
+        { rootMargin: "300px" }
+      ).observe(video);
+    }
+
+    show(0);
+    summary();
+  }
+</script>

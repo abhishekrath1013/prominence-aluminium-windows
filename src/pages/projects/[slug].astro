@@ -1,9 +1,9 @@
 ---
 import { Image } from "astro:assets";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import Frame from "../../components/Frame.astro";
-import Eyebrow from "../../components/Eyebrow.astro";
+import PageHero from "../../components/PageHero.astro";
 import ArrowLink from "../../components/ArrowLink.astro";
+import StudioInvite from "../../components/StudioInvite.astro";
 import { projects } from "../../data/projects";
 import { getProduct } from "../../data/products";
 import { getSolution } from "../../data/solutions";
@@ -22,106 +22,44 @@ const systemHeadline = product?.headline ?? solution?.headline ?? "";
 ---
 
 <BaseLayout
-  title={`${project.title} — Prominance Applications`}
+  title={`${project.title} — Prominance Residences`}
   description={`${project.title}, featuring the Prominance ${project.systemName} system.`}
   path={`/projects/${project.slug}/`}
   ogImage={project.image.src}
-  showContactCTA
 >
-  <section class="relative h-[85svh] min-h-[520px] w-full overflow-hidden bg-ink" data-reveal-group>
-    <Image
-      src={project.image}
-      alt={`${project.title} — featuring the ${project.systemName} system.`}
-      class="h-full w-full object-cover"
-      fetchpriority="high"
-      widths={[640, 1200, 1920]}
-      sizes="100vw"
-    />
-    <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-ink/65"></div>
-    <div class="pointer-events-none absolute inset-3 md:inset-6"><Frame tone="off-white" /></div>
+  <PageHero eyebrow={`Residence · ${project.systemName}`} image={project.image} imageAlt={`${project.title} — featuring the ${project.systemName} system.`}>
+    {project.title}
+    <Fragment slot="description">{systemHeadline}</Fragment>
+  </PageHero>
 
-    <div class="container-frame absolute inset-x-0 bottom-16 md:bottom-20">
-      <p class="label-eyebrow text-off-white/70" data-reveal="fade">{project.systemName}</p>
-      <h1 class="mt-5 font-display text-[clamp(2.75rem,7.5vw,5.5rem)] leading-[0.98] text-off-white text-balance" data-reveal="up">
-        {project.title}
-      </h1>
+  <section class="bg-ink py-32 md:py-48">
+    <div class="container-frame grid grid-cols-1 gap-12 md:grid-cols-12">
+      <p class="label-eyebrow text-champagne md:col-span-3" data-reveal="fade">The setting</p>
+      <p class="display-md max-w-4xl md:col-span-9" data-scrub-text>{applications}</p>
     </div>
   </section>
 
-  <section class="bg-off-white py-14 md:py-20" data-reveal-group>
-    <div class="container-frame grid grid-cols-1 gap-16 md:grid-cols-12">
-      <div class="md:col-span-4">
-        <Eyebrow index="01" class="text-ink/65" data-reveal="fade">The Setting</Eyebrow>
+  <section class="bg-ink pb-32 md:pb-48">
+    <div class="container-frame grid grid-cols-1 gap-8 sm:grid-cols-2">
+      <div class="relative aspect-[4/3] overflow-hidden" data-img-reveal>
+        <Image src={project.image} alt={`${project.title} detail.`} class="h-[116%] w-full object-cover" data-parallax="0.2" loading="lazy" widths={[500, 900, 1200]} sizes="(min-width: 640px) 50vw, 100vw" />
       </div>
-      <div class="md:col-span-8">
-        <p class="max-w-2xl font-display text-2xl leading-snug text-ink md:text-3xl" data-reveal="up">
-          {systemHeadline}
-        </p>
-        <p class="mt-8 max-w-xl text-sm leading-relaxed text-ink/60" data-reveal="up">
-          {applications}
-        </p>
+      <div class="relative aspect-[4/3] overflow-hidden" data-img-reveal>
+        <Image src={images.led} alt="Detail of an aluminium frame reveal with integrated LED lighting." class="h-[116%] w-full object-cover" data-parallax="0.2" loading="lazy" widths={[500, 900, 1200]} sizes="(min-width: 640px) 50vw, 100vw" />
       </div>
     </div>
   </section>
 
-  <section class="bg-off-white pb-14 md:pb-20" data-reveal-group>
-    <div class="container-frame grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <div class="uf-frame-host relative" data-reveal="up">
-        <div class="relative aspect-[4/3] w-full overflow-hidden">
-          <Image
-            src={project.image}
-            alt={`${project.title} detail crop.`}
-            class="h-full w-full object-cover transition-precise duration-[1200ms] group-hover:scale-[1.02]"
-            loading="lazy"
-            widths={[400, 800, 1200]}
-            sizes="(min-width: 640px) 50vw, 100vw"
-          />
-        </div>
-        <Frame hover />
-      </div>
-      <div class="uf-frame-host relative" data-reveal="up">
-        <div class="relative aspect-[4/3] w-full overflow-hidden">
-          <Image
-            src={images.led}
-            alt="Macro detail of an aluminium frame reveal with integrated LED lighting."
-            class="h-full w-full object-cover transition-precise duration-[1200ms] group-hover:scale-[1.02]"
-            loading="lazy"
-            widths={[400, 800, 1200]}
-            sizes="(min-width: 640px) 50vw, 100vw"
-          />
-        </div>
-        <Frame hover />
+  <section class="bg-ink-soft py-28 md:py-44">
+    <div class="container-frame grid grid-cols-1 gap-12 md:grid-cols-12" data-reveal-group>
+      <p class="label-eyebrow text-champagne md:col-span-3" data-reveal="fade">The system</p>
+      <div class="md:col-span-9">
+        <h2 class="display-lg" data-split>{project.systemName}</h2>
+        <p class="mt-8 max-w-xl text-base leading-relaxed text-ivory/65" data-reveal="up">{product?.description ?? solution?.description}</p>
+        <div class="mt-10" data-reveal="up"><ArrowLink href={systemHref}>Discover {project.systemName}</ArrowLink></div>
       </div>
     </div>
   </section>
 
-  <section class="bg-ink py-14 text-off-white md:py-20" data-reveal-group>
-    <div class="container-frame grid grid-cols-1 gap-16 md:grid-cols-12">
-      <div class="md:col-span-4">
-        <Eyebrow index="02" class="text-aluminium" data-reveal="fade">The System</Eyebrow>
-      </div>
-      <div class="md:col-span-8">
-        <h2 class="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] text-balance" data-reveal="up">
-          {project.systemName}
-        </h2>
-        <p class="mt-6 max-w-xl text-sm leading-relaxed text-stone" data-reveal="up">
-          {product?.description ?? solution?.description}
-        </p>
-        <div class="mt-8" data-reveal="up">
-          <ArrowLink href={systemHref} variant="light">View {project.systemName}</ArrowLink>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="relative h-[70svh] min-h-[420px] w-full overflow-hidden" data-reveal-group>
-    <Image
-      src={project.image}
-      alt={project.title}
-      class="h-full w-full object-cover"
-      loading="lazy"
-      widths={[640, 1200, 1920]}
-      sizes="100vw"
-    />
-  </section>
+  <StudioInvite />
 </BaseLayout>

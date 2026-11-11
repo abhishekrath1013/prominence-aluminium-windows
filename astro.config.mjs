@@ -6,6 +6,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://uniframe.com',
+  devToolbar: { enabled: false },
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
@@ -15,11 +16,11 @@ export default defineConfig({
   },
   fonts: [
     {
-      // Neat, thin, geometric — replaces the earlier curvy display serif.
+      // Refined high-contrast display serif for the luxury editorial voice.
       provider: fontProviders.google(),
-      name: 'Jost',
+      name: 'Cormorant Garamond',
       cssVariable: '--font-display-raw',
-      weights: ['200', '300', '400', '500'],
+      weights: ['300', '400', '500'],
       styles: ['normal', 'italic'],
     },
     {

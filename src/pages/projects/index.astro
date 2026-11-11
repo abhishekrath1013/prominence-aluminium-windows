@@ -2,62 +2,61 @@
 import { Image } from "astro:assets";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHero from "../../components/PageHero.astro";
+import StudioInvite from "../../components/StudioInvite.astro";
 import { images } from "../../assets/images";
-import Frame from "../../components/Frame.astro";
-import ContactCTA from "../../sections/ContactCTA.astro";
 import { projects } from "../../data/projects";
 ---
 
 <BaseLayout
-  title="Projects — Prominance Systems in Architectural Context"
+  title="Residences — Prominance in Architectural Context"
   description="Selected applications of Prominance's aluminium window, door and facade systems across residential and architectural settings."
   path="/projects/"
   ogImage="/media/hero-corner.jpg"
 >
-  <PageHero eyebrow="Applications" image={images.heroCorner} imageAlt="A concrete villa corner with full-height aluminium-framed glazing opening onto a terrace.">
-    Applications
+  <PageHero eyebrow="Residences" image={images.heroCorner} imageAlt="A concrete villa corner with full-height aluminium-framed glazing opening onto a terrace.">
+    Homes designed around a view.
     <Fragment slot="description">
-      A closer look at how each Prominance system performs in real architectural settings — from panoramic
-      hillside glazing to compact urban interiors.
+      A closer look at how each Prominance system lives in real architectural settings — from panoramic hillside
+      glazing to compact urban interiors.
     </Fragment>
   </PageHero>
 
-  <section class="bg-off-white py-16 md:py-24" data-reveal-group>
-    <div class="container-frame grid grid-cols-1 gap-6 sm:grid-cols-2">
+  <section class="bg-ink py-28 md:py-44">
+    <div class="container-frame grid grid-cols-1 gap-x-10 gap-y-24 md:grid-cols-12">
       {
-        projects.map((project, i) => (
-          <a
-            href={`/projects/${project.slug}/`}
-            class:list={["uf-frame-host group relative block overflow-hidden", i === 0 && "sm:col-span-2"]}
-            data-reveal="up"
-            data-cursor-hover
-          >
-            <div class:list={["relative w-full overflow-hidden", i === 0 ? "aspect-[16/9]" : "aspect-[4/3]"]}>
-              <Image
-                src={project.image}
-                alt={`${project.title} — featuring the ${project.systemName} system.`}
-                class="h-full w-full object-cover transition-precise duration-[1200ms] group-hover:scale-[1.02]"
-                loading="lazy"
-                widths={[400, 800, 1200]}
-                sizes="(min-width: 640px) 50vw, 100vw"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent opacity-0 transition-precise group-hover:opacity-100" />
-              <Frame tone="off-white" hover />
-              <div class="absolute inset-x-6 bottom-6 flex translate-y-2 items-end justify-between opacity-0 transition-precise group-hover:translate-y-0 group-hover:opacity-100">
-                <div>
-                  <p class="label-eyebrow text-off-white/70">{project.systemName}</p>
-                  <p class="mt-2 font-display text-xl text-off-white md:text-2xl">{project.title}</p>
-                </div>
-                <svg width="20" height="12" viewBox="0 0 18 10" fill="none" class="text-off-white">
-                  <path d="M0 5H17M17 5L13 1M17 5L13 9" stroke="currentColor" stroke-width="1" />
-                </svg>
+        projects.map((p, i) => {
+          const layout = [
+            "md:col-span-8",
+            "md:col-span-4 md:mt-40",
+            "md:col-span-5 md:col-start-2",
+            "md:col-span-6 md:col-start-7 md:mt-24",
+            "md:col-span-6",
+            "md:col-span-5 md:col-start-8 md:mt-32",
+          ][i % 6];
+          const ratio = i % 3 === 1 ? "aspect-[3/4]" : "aspect-[4/3]";
+          return (
+            <a href={`/projects/${p.slug}/`} class={`group block ${layout}`}>
+              <div class={`relative overflow-hidden ${ratio}`} data-img-reveal>
+                <Image
+                  src={p.image}
+                  alt={`${p.title} — featuring the ${p.systemName} system.`}
+                  class="h-[114%] w-full object-cover transition-transform duration-[1600ms] ease-[var(--ease-lux)] group-hover:scale-[1.04]"
+                  data-parallax="0.16"
+                  loading="lazy"
+                  widths={[500, 900, 1400]}
+                  sizes="(min-width: 768px) 55vw, 100vw"
+                />
               </div>
-            </div>
-          </a>
-        ))
+              <div class="mt-6 flex items-baseline justify-between gap-6" data-reveal="up">
+                <h2 class="font-display text-3xl font-light transition-colors group-hover:text-champagne-soft md:text-4xl">{p.title}</h2>
+                <span class="label-eyebrow shrink-0 text-ivory/45">{p.systemName}</span>
+              </div>
+            </a>
+          );
+        })
       }
     </div>
   </section>
 
-  <ContactCTA />
+  <StudioInvite />
 </BaseLayout>

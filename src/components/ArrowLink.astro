@@ -1,54 +1,14 @@
 ---
 interface Props {
   href: string;
-  class?: string;
-  variant?: "light" | "dark";
   external?: boolean;
 }
-const { href, class: className = "", variant = "dark", external = false } = Astro.props;
-const color = variant === "dark" ? "text-ink" : "text-off-white";
+const { href, external = false } = Astro.props;
 ---
 
-<a
-  href={href}
-  class:list={["uf-arrow-link group inline-flex items-center gap-3", color, className]}
-  target={external ? "_blank" : undefined}
-  rel={external ? "noopener noreferrer" : undefined}
->
-  <span class="label-eyebrow relative">
-    <slot />
-    <span class="uf-arrow-link__underline"></span>
-  </span>
-  <span class="uf-arrow-link__arrow" aria-hidden="true">
-    <svg width="18" height="10" viewBox="0 0 18 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 5H17M17 5L13 1M17 5L13 9" stroke="currentColor" stroke-width="1"></path>
-    </svg>
-  </span>
+<a href={href} class="link-underline label-eyebrow" {...external ? { target: "_blank", rel: "noopener noreferrer" } : {}}>
+  <slot />
+  <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true">
+    <path d="M0 5H17M17 5L13 1M17 5L13 9" stroke="currentColor" stroke-width="1"></path>
+  </svg>
 </a>
-
-<style>
-  .uf-arrow-link__underline {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -4px;
-    height: 1px;
-    background: var(--color-brass);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--duration-normal) var(--ease-precise);
-  }
-
-  .group:hover .uf-arrow-link__underline {
-    transform: scaleX(1);
-  }
-
-  .uf-arrow-link__arrow {
-    display: inline-flex;
-    transition: transform var(--duration-micro) var(--ease-precise);
-  }
-
-  .group:hover .uf-arrow-link__arrow {
-    transform: translateX(4px);
-  }
-</style>

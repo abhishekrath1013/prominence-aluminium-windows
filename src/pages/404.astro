@@ -3,19 +3,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ArrowLink from "../components/ArrowLink.astro";
 ---
 
-<BaseLayout title="Page Not Found" description="This page could not be found." path="/404/" headerTheme="light">
-  <section class="flex min-h-[80svh] flex-col items-start justify-center bg-off-white pt-24">
-    <div class="container-frame">
-      <p class="label-eyebrow text-ink/60">404</p>
-      <h1 class="mt-6 max-w-2xl font-display text-[clamp(2.5rem,7vw,5rem)] leading-[0.98] text-ink text-balance">
-        This view doesn’t exist.
-      </h1>
-      <p class="mt-6 max-w-md text-base leading-relaxed text-ink/60">
-        The page you were looking for may have moved. Explore our collection or head back home.
-      </p>
-      <div class="mt-10 flex flex-wrap gap-8">
-        <ArrowLink href="/">Return Home</ArrowLink>
-        <ArrowLink href="/products/">Explore Products</ArrowLink>
+<BaseLayout title="Page Not Found" description="This page could not be found." path="/404/">
+  <section class="flex min-h-[100svh] flex-col justify-center bg-ink pt-24">
+    <div class="container-frame" data-reveal-group>
+      <p class="label-eyebrow text-champagne" data-reveal="fade">404</p>
+      <h1 class="display-xl mt-8" data-split>This view <em class="italic text-champagne-soft">doesn’t exist.</em></h1>
+      <p class="lead mt-10 max-w-md text-ivory/70" data-reveal="up">The page you were looking for may have moved. Explore the collection or return home.</p>
+      <div class="mt-12 flex flex-wrap gap-10" data-reveal="up">
+        <ArrowLink href="/">Return home</ArrowLink>
+        <ArrowLink href="/products/">The collection</ArrowLink>
       </div>
     </div>
   </section>

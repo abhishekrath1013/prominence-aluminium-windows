@@ -1,745 +1,160 @@
 ---
 import { Image } from "astro:assets";
-import { primaryNav, secondaryNav } from "../data/nav";
 import { images } from "../assets/images";
-import { company, sisterBrands } from "../data/company";
+import { company } from "../data/company";
 import { products } from "../data/products";
 
-interface Props {
-  theme?: "dark" | "light"; // initial (pre-scroll) header theme
-}
-const { theme = "dark" } = Astro.props;
-const path = Astro.url.pathname;
-const allNav = [...primaryNav, ...secondaryNav];
-const slidingProducts = products.filter((p) => p.family === "sliding");
-const casementProducts = products.filter((p) => p.family === "casement");
+const primary = [
+  { label: "The Collection", href: "/products/" },
+  { label: "Residences", href: "/projects/" },
+  { label: "Facade & Beyond", href: "/facade-sky-lights/" },
+  { label: "Our House", href: "/about-us/" },
+  { label: "Journal", href: "/insights/" },
+  { label: "Visit the Studio", href: "/contact-us/" },
+];
+const sliding = products.filter((p) => p.family === "sliding");
+const casement = products.filter((p) => p.family === "casement");
 ---
 
-<header class="uf-header" data-theme={theme} id="site-header">
-  <div class="uf-header__scrim" aria-hidden="true"></div>
-  <div class="container-frame uf-header__bar">
-    <a href="/" class="uf-header__logo" aria-label="Prominance home">
-      <Image src={images.prominanceLogo} alt="PROMINANCE Window Systems" width={1060} height={198} widths={[260, 520]} sizes="180px" />
+<header data-header class="uf-header fixed inset-x-0 top-0 z-[150]">
+  <div class="uf-header-bar container-frame flex items-center justify-between py-5 md:py-7">
+    <a href="/" aria-label="Prominance — home" class="relative z-[2]">
+      <Image
+        src={images.prominanceLogo}
+        alt="PROMINANCE"
+        width={1060}
+        height={198}
+        class="h-6 w-auto brightness-0 invert md:h-7"
+        widths={[260, 520]}
+        sizes="180px"
+      />
     </a>
 
-    <button class="uf-header__toggle" id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
-      <span class="uf-header__toggle-label label-eyebrow">Menu</span>
-      <span class="uf-header__toggle-lines">
-        <span></span>
-        <span></span>
-      </span>
-    </button>
+    <div class="relative z-[2] flex items-center gap-6 md:gap-10">
+      <a href="/contact-us/" class="label-eyebrow hidden text-ivory/80 transition-colors hover:text-champagne md:inline">
+        Visit the Studio
+      </a>
+      <button type="button" data-menu-toggle aria-expanded="false" aria-controls="uf-menu" class="group flex items-center gap-4">
+        <span class="label-eyebrow" data-menu-label>Menu</span>
+        <span class="relative block h-[10px] w-9">
+          <span class="absolute left-0 top-0 block h-px w-full bg-ivory transition-transform duration-500 group-aria-expanded:translate-y-[4.5px] group-aria-expanded:rotate-[20deg]"></span>
+          <span class="absolute bottom-0 left-0 block h-px w-2/3 bg-ivory transition-all duration-500 group-aria-expanded:bottom-[4.5px] group-aria-expanded:w-full group-aria-expanded:-rotate-[20deg]"></span>
+        </span>
+      </button>
+    </div>
   </div>
 
-  <div class="uf-menu" id="mobile-menu">
-    <div class="uf-menu-glow" aria-hidden="true"></div>
-    <div class="container-frame uf-menu-inner">
-      <nav class="uf-menu-links" aria-label="Primary">
+  <nav id="uf-menu" class="uf-menu" aria-label="Primary" hidden>
+    <div class="container-frame grid h-full grid-cols-1 gap-10 pb-10 pt-28 md:grid-cols-12 md:pt-36">
+      <ul class="flex flex-col justify-center gap-1 md:col-span-7">
         {
-          allNav.map((item, i) => {
-            const indexLabel = String(i + 1).padStart(2, "0");
-
-            if (item.href === "/products/") {
-              return (
-                <div class="uf-menu-link uf-mega-trigger" data-mega-trigger>
-                  <button
-                    type="button"
-                    class="uf-menu-link__row"
-                    data-mega-toggle
-                    aria-expanded="false"
-                    aria-controls="mega-products"
-                  >
-                    <span class="uf-menu-link__index label-eyebrow text-brass">{indexLabel}</span>
-                    <span class="uf-menu-link__label">{item.label}</span>
-                  </button>
-
-                  <div class="uf-mega" id="mega-products">
-                    <div class="uf-mega-grid">
-                      <div class="uf-mega-col">
-                        <a href="/sliding/" class="uf-mega-col__title">Sliding Systems</a>
-                        <ul class="uf-mega-list">
-                          {slidingProducts.map((p) => (
-                            <li>
-                              <a href={`/${p.slug}/`} class="uf-mega-link">
-                                <span class="uf-mega-icon" data-icon="sliding" aria-hidden="true">
-                                  <svg viewBox="0 0 34 22" fill="none">
-                                    <rect x="1" y="1" width="32" height="20" rx="1.5" stroke="currentColor" stroke-width="1.3" opacity="0.35" />
-                                    <line x1="17" y1="1" x2="17" y2="21" stroke="currentColor" stroke-width="1" opacity="0.35" stroke-dasharray="1.6 2" />
-                                    <rect class="uf-mega-icon__sash" x="2.5" y="2.5" width="13" height="17" stroke="currentColor" stroke-width="1.5" />
-                                  </svg>
-                                </span>
-                                <span class="uf-mega-link__text">
-                                  <span class="uf-mega-link__name">{p.name}</span>
-                                  <span class="uf-mega-link__tag">{p.category}</span>
-                                </span>
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div class="uf-mega-col">
-                        <a href="/casement/" class="uf-mega-col__title">Casement Systems</a>
-                        <ul class="uf-mega-list">
-                          {casementProducts.map((p) => (
-                            <li>
-                              <a href={`/${p.slug}/`} class="uf-mega-link">
-                                <span class="uf-mega-icon" data-icon="casement" aria-hidden="true">
-                                  <svg viewBox="0 0 34 22" fill="none">
-                                    <rect x="1" y="1" width="32" height="20" rx="1.5" stroke="currentColor" stroke-width="1.3" opacity="0.35" />
-                                    <path class="uf-mega-icon__arc" d="M2.5,2.5 A16,16 0 0 1 17,19" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 2" opacity="0" />
-                                    <rect class="uf-mega-icon__sash" x="2.5" y="2.5" width="14.5" height="17" stroke="currentColor" stroke-width="1.5" />
-                                  </svg>
-                                </span>
-                                <span class="uf-mega-link__text">
-                                  <span class="uf-mega-link__name">{p.name}</span>
-                                  <span class="uf-mega-link__tag">{p.category}</span>
-                                </span>
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div class="uf-mega-col">
-                        <a href="/facade-sky-lights/" class="uf-mega-col__title">Facade &amp; Sky Lights</a>
-                        <ul class="uf-mega-list">
-                          <li>
-                            <a href="/facade-sky-lights/" class="uf-mega-link">
-                              <span class="uf-mega-icon" data-icon="facade" aria-hidden="true">
-                                <svg viewBox="0 0 34 22" fill="none">
-                                  <rect x="1" y="1" width="32" height="20" rx="1.5" stroke="currentColor" stroke-width="1.3" opacity="0.35" />
-                                  <line x1="12" y1="1" x2="12" y2="21" stroke="currentColor" stroke-width="1" opacity="0.35" />
-                                  <line x1="23" y1="1" x2="23" y2="21" stroke="currentColor" stroke-width="1" opacity="0.35" />
-                                  <line x1="1" y1="11" x2="33" y2="11" stroke="currentColor" stroke-width="1" opacity="0.35" />
-                                  <circle class="uf-mega-icon__glow" cx="17" cy="11" r="9" fill="currentColor" opacity="0" />
-                                </svg>
-                              </span>
-                              <span class="uf-mega-link__text">
-                                <span class="uf-mega-link__name">Structural Glazing</span>
-                                <span class="uf-mega-link__tag">Facade, skylights &amp; shrouds</span>
-                              </span>
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <a href="/products/" class="uf-mega-viewall">
-                      View all products
-                      <span aria-hidden="true">→</span>
-                    </a>
-                  </div>
-                </div>
-              );
-            }
-
-            return (
-              <a
-                href={item.href}
-                class="uf-menu-link"
-                aria-current={path.startsWith(item.href) ? "page" : undefined}
-              >
-                <span class="uf-menu-link__index label-eyebrow text-brass">{indexLabel}</span>
-                <span class="uf-menu-link__label">{item.label}</span>
+          primary.map((l, i) => (
+            <li class="overflow-hidden">
+              <a href={l.href} data-menu-link class="group flex items-baseline gap-5 py-1">
+                <span class="label-eyebrow w-7 text-champagne/80">{String(i + 1).padStart(2, "0")}</span>
+                <span class="font-display text-[clamp(2.25rem,6.2vw,5.5rem)] font-light leading-[1.02] transition-all duration-500 group-hover:translate-x-3 group-hover:italic group-hover:text-champagne-soft">
+                  {l.label}
+                </span>
               </a>
-            );
-          })
+            </li>
+          ))
         }
-      </nav>
+      </ul>
 
-      <div class="uf-menu-aside">
-        <div>
-          <p class="label-eyebrow text-aluminium">Get in Touch</p>
-          <a href={company.phoneHref} class="uf-menu-aside__link">{company.phoneDisplay}</a>
-          <a href={`mailto:${company.email}`} class="uf-menu-aside__link">{company.email}</a>
-        </div>
-
-        <div>
-          <p class="label-eyebrow text-aluminium">Follow</p>
-          <div class="uf-menu-social">
-            <a href={company.social.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href={company.social.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href={company.social.youtube} target="_blank" rel="noopener noreferrer">YouTube</a>
+      <div class="hidden flex-col justify-between md:col-span-5 md:flex" data-menu-extra>
+        <div class="grid grid-cols-2 gap-8">
+          <div>
+            <p class="label-eyebrow text-champagne">Sliding</p>
+            <ul class="mt-5 space-y-3">
+              {sliding.map((p) => <li><a href={`/${p.slug}/`} class="text-sm text-ivory/70 transition-colors hover:text-ivory">{p.name}</a></li>)}
+            </ul>
+          </div>
+          <div>
+            <p class="label-eyebrow text-champagne">Casement</p>
+            <ul class="mt-5 space-y-3">
+              {casement.map((p) => <li><a href={`/${p.slug}/`} class="text-sm text-ivory/70 transition-colors hover:text-ivory">{p.name}</a></li>)}
+            </ul>
           </div>
         </div>
-
-        <div>
-          <p class="label-eyebrow text-aluminium">Our Creative Brands</p>
-          <div class="uf-menu-social">
-            {sisterBrands.map((b) => (
-              <a href={b.href} target="_blank" rel="noopener noreferrer">{b.name}</a>
-            ))}
-          </div>
+        <div class="text-sm leading-relaxed text-ivory/60">
+          <p class="label-eyebrow text-champagne">Private enquiries</p>
+          <a href={company.phoneHref} class="mt-3 block font-display text-3xl text-ivory">{company.phoneDisplay}</a>
+          <a href={`mailto:${company.email}`} class="mt-1 block hover:text-ivory">{company.email}</a>
         </div>
       </div>
     </div>
-  </div>
+  </nav>
 </header>
 
 <style>
   .uf-header {
-    position: fixed;
-    inset-inline: 0;
-    top: 0;
-    z-index: 50;
-    color: var(--color-off-white);
+    transition: transform 0.7s var(--ease-lux), background-color 0.5s ease, backdrop-filter 0.5s ease;
   }
-
-  .uf-header[data-theme="light"] {
-    color: var(--color-ink);
+  .uf-header.is-solid:not(.is-open) {
+    background: rgb(10 10 11 / 0.72);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
   }
-
-  .uf-header__scrim {
-    position: absolute;
-    inset: 0;
-    height: 220px;
-    background: linear-gradient(to bottom, rgb(0 0 0 / 0.78) 0%, rgb(0 0 0 / 0.45) 45%, transparent 100%);
-    opacity: 1;
-    transition: opacity var(--duration-normal) var(--ease-precise);
-    pointer-events: none;
+  .uf-header.is-hidden {
+    transform: translateY(-110%);
   }
-
-  .uf-header[data-theme="light"] .uf-header__scrim {
-    opacity: 0;
-  }
-
-  .uf-header.is-scrolled {
-    color: var(--color-ink);
-  }
-
-  .uf-header.is-scrolled .uf-header__bar {
-    background: rgb(247 245 240 / 0.86);
-    backdrop-filter: blur(14px);
-    border-bottom-color: rgb(47 63 82 / 0.1);
-  }
-
-  .uf-header.is-scrolled .uf-header__scrim {
-    opacity: 0;
-  }
-
-  .uf-header.menu-open {
-    color: var(--color-off-white);
-  }
-
-  .uf-header.menu-open .uf-header__bar {
-    background: transparent;
-    border-color: transparent;
-  }
-
-  .uf-header__bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    padding-block: 1.5rem;
-    border-bottom: 1px solid transparent;
-    transition:
-      background var(--duration-normal) var(--ease-precise),
-      border-color var(--duration-normal) var(--ease-precise),
-      padding var(--duration-normal) var(--ease-precise);
-    position: relative;
-    z-index: 46;
-  }
-
-  .uf-header.is-scrolled .uf-header__bar {
-    padding-block: 1rem;
-  }
-
-  .uf-header__logo img {
-    height: 26px;
-    width: auto;
-    filter: brightness(0) invert(1);
-    transition: filter var(--duration-normal) var(--ease-precise);
-  }
-
-  .uf-header[data-theme="light"] .uf-header__logo img,
-  .uf-header.is-scrolled .uf-header__logo img {
-    filter: none;
-  }
-
-  .uf-header.menu-open .uf-header__logo img {
-    filter: brightness(0) invert(1);
-  }
-
-  .uf-header__toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
-  }
-
-  .uf-header__toggle-lines {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 28px;
-    height: 28px;
-  }
-
-  .uf-header__toggle-lines span {
-    height: 1px;
-    width: 100%;
-    background: currentColor;
-    transition: transform var(--duration-micro) var(--ease-precise), opacity var(--duration-micro);
-  }
-
-  .uf-header__toggle[aria-expanded="true"] .uf-header__toggle-lines span:first-child {
-    transform: translateY(3px) rotate(45deg);
-  }
-
-  .uf-header__toggle[aria-expanded="true"] .uf-header__toggle-lines span:last-child {
-    transform: translateY(-3px) rotate(-45deg);
-  }
-
-  /* ---------------------------------------------------------------- */
-  /* Full-screen luxury menu                                           */
-  /* ---------------------------------------------------------------- */
   .uf-menu {
     position: fixed;
     inset: 0;
+    z-index: 1;
     background: var(--color-ink);
-    color: var(--color-off-white);
-    overflow: hidden;
-    transform: translateY(-100%);
-    transition: transform var(--duration-cinematic) var(--ease-precise);
-    z-index: 45;
+    clip-path: inset(0 0 100% 0);
+    visibility: hidden;
+    transition: clip-path 0.9s var(--ease-lux), visibility 0s linear 0.9s;
+    overflow-y: auto;
   }
-
-  .uf-menu.is-open {
+  .uf-header.is-open .uf-menu {
+    clip-path: inset(0 0 0% 0);
+    visibility: visible;
+    transition: clip-path 0.9s var(--ease-lux), visibility 0s;
+  }
+  [data-menu-link] > span:last-child {
+    display: inline-block;
+    transform: translateY(105%);
+    transition: transform 0.9s var(--ease-lux), color 0.4s, font-style 0.4s;
+  }
+  .uf-header.is-open [data-menu-link] > span:last-child {
     transform: translateY(0);
   }
-
-  .uf-menu-glow {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(50% 45% at 85% 15%, rgb(176 141 87 / 0.14), transparent 70%),
-      radial-gradient(45% 40% at 10% 90%, rgb(247 245 240 / 0.05), transparent 70%);
-    pointer-events: none;
-  }
-
-  .uf-menu-inner {
-    position: relative;
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    justify-content: center;
-    gap: 3.5rem;
-    padding-block: 7rem 3rem;
-  }
-
-  .uf-menu-links {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .uf-menu-link {
-    display: flex;
-    align-items: baseline;
-    gap: 1.25rem;
-    padding-block: 0.4rem;
-    border-top: 1px solid rgb(247 245 240 / 0.12);
-    opacity: 0;
-    transform: translateY(24px);
-  }
-
-  .uf-menu-links a:last-child {
-    border-bottom: 1px solid rgb(247 245 240 / 0.12);
-  }
-
-  .uf-menu-link__index {
-    min-width: 2rem;
-  }
-
-  .uf-menu-link__label {
-    font-family: var(--font-display);
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    line-height: 1.1;
-    transition: color var(--duration-normal) var(--ease-precise), transform var(--duration-normal) var(--ease-precise);
-  }
-
-  .uf-menu-link:hover .uf-menu-link__label,
-  .uf-menu-link[aria-current="page"] .uf-menu-link__label {
-    color: var(--color-brass);
-    transform: translateX(10px);
-  }
-
-  /* ---------------------------------------------------------------- */
-  /* Products mega menu                                                 */
-  /* ---------------------------------------------------------------- */
-  .uf-mega-trigger {
-    /* GSAP leaves an identity transform on every .uf-menu-link after the
-       entrance stagger, which forces each into its own stacking context —
-       without an explicit z-index here, later siblings (e.g. Insights)
-       would paint over this trigger's absolutely-positioned .uf-mega panel
-       regardless of the panel's own z-index. */
-    position: relative;
-    z-index: 1;
-  }
-
-  .uf-menu-link__row {
-    display: flex;
-    width: 100%;
-    align-items: baseline;
-    gap: 1.25rem;
-    background: none;
-    border: none;
-    margin: 0;
-    padding: 0;
-    font: inherit;
-    color: inherit;
-    text-align: left;
-    cursor: pointer;
-  }
-
-  .uf-mega {
-    position: absolute;
-    top: -1.5rem;
-    left: calc(100% + 2rem);
-    z-index: 10;
-    width: min(460px, 30vw, calc(100vw - 8rem));
-    background: var(--color-ink-soft);
-    border: 1px solid rgb(247 245 240 / 0.1);
-    padding: 1.75rem;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateX(-6px);
-    box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.6);
-    transition: opacity var(--duration-normal) var(--ease-precise), transform var(--duration-normal) var(--ease-precise);
-  }
-
-  /* Bridges the visual gap between the trigger row and the panel. Without
-     this, moving the pointer from the "Products" label toward the panel
-     crosses a strip that belongs to neither element's hit box — hover is
-     lost mid-crossing and the panel closes (and, because pointer-events
-     flips off immediately, can't be re-entered). This pseudo-element is a
-     descendant of .uf-mega-trigger just like the panel itself, so hovering
-     it keeps the trigger's :hover — and therefore the panel's visibility —
-     active all the way across. */
-  .uf-mega::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -2rem;
-    width: 2rem;
-  }
-
-  .uf-mega-trigger:hover .uf-mega,
-  .uf-mega-trigger:focus-within .uf-mega,
-  .uf-mega-trigger.is-open .uf-mega {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateX(0);
-  }
-
-  .uf-mega-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .uf-mega-col__title {
-    display: block;
-    font-family: var(--font-sans);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-off-white);
-    padding-bottom: 0.6rem;
-    border-bottom: 1px solid rgb(247 245 240 / 0.14);
-    transition: color var(--duration-micro) ease;
-  }
-
-  .uf-mega-col__title:hover {
-    color: var(--color-brass);
-  }
-
-  .uf-mega-list {
-    margin-top: 0.85rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
-
-  .uf-mega-link {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    padding: 0.35rem;
-    margin-inline: -0.35rem;
-    border-radius: 2px;
-    transition: background var(--duration-micro) ease;
-  }
-
-  .uf-mega-link:hover,
-  .uf-mega-link:focus-visible {
-    background: rgb(247 245 240 / 0.06);
-  }
-
-  .uf-mega-icon {
-    flex: 0 0 auto;
-    width: 34px;
-    height: 22px;
-    color: var(--color-stone);
-    transition: color var(--duration-micro) ease;
-  }
-
-  .uf-mega-link:hover .uf-mega-icon,
-  .uf-mega-link:focus-visible .uf-mega-icon {
-    color: var(--color-brass);
-  }
-
-  .uf-mega-icon svg {
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-  }
-
-  /* Sliding systems: the sash glides past the fixed mullion on hover. */
-  .uf-mega-icon[data-icon="sliding"] .uf-mega-icon__sash {
-    transform-box: fill-box;
-    transition: transform 0.5s var(--ease-precise);
-  }
-
-  .uf-mega-link:hover .uf-mega-icon[data-icon="sliding"] .uf-mega-icon__sash,
-  .uf-mega-link:focus-visible .uf-mega-icon[data-icon="sliding"] .uf-mega-icon__sash {
-    transform: translateX(15px);
-  }
-
-  /* Casement systems: the sash swings open on its hinge, with a door-swing arc. */
-  .uf-mega-icon[data-icon="casement"] .uf-mega-icon__sash {
-    transform-box: fill-box;
-    transform-origin: left center;
-    transition: transform 0.5s var(--ease-precise);
-  }
-
-  .uf-mega-icon[data-icon="casement"] .uf-mega-icon__arc {
-    transition: opacity 0.4s ease;
-  }
-
-  .uf-mega-link:hover .uf-mega-icon[data-icon="casement"] .uf-mega-icon__sash,
-  .uf-mega-link:focus-visible .uf-mega-icon[data-icon="casement"] .uf-mega-icon__sash {
-    transform: rotate(-24deg);
-  }
-
-  .uf-mega-link:hover .uf-mega-icon[data-icon="casement"] .uf-mega-icon__arc,
-  .uf-mega-link:focus-visible .uf-mega-icon[data-icon="casement"] .uf-mega-icon__arc {
-    opacity: 0.5;
-  }
-
-  /* Facade & sky lights: fixed glazing, so light glows through instead of moving. */
-  .uf-mega-icon[data-icon="facade"] .uf-mega-icon__glow {
-    transition: opacity 0.6s ease;
-  }
-
-  .uf-mega-link:hover .uf-mega-icon[data-icon="facade"] .uf-mega-icon__glow,
-  .uf-mega-link:focus-visible .uf-mega-icon[data-icon="facade"] .uf-mega-icon__glow {
-    opacity: 0.18;
-  }
-
-  .uf-mega-link__text {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 0.1rem;
-  }
-
-  .uf-mega-link__name {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    color: var(--color-off-white);
-  }
-
-  .uf-mega-link__tag {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 0.6875rem;
-    color: var(--color-stone);
-  }
-
-  .uf-mega-viewall {
-    display: inline-flex;
-    width: 100%;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid rgb(247 245 240 / 0.1);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-brass);
-  }
-
-  @media (max-width: 47.9375rem) {
-    .uf-mega {
-      position: static;
-      max-height: 0;
-      width: 100%;
-      overflow: hidden;
-      opacity: 1;
-      pointer-events: auto;
-      transform: none;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      padding: 0;
-      transition: max-height var(--duration-cinematic) var(--ease-precise);
-    }
-
-    .uf-mega-trigger.is-open .uf-mega {
-      max-height: 1400px;
-      padding-top: 1.5rem;
-    }
-
-    .uf-mega-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-  }
-
-  .uf-menu-aside {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    opacity: 0;
-  }
-
-  .uf-menu.is-open .uf-menu-aside {
-    opacity: 1;
-    transition: opacity var(--duration-cinematic) var(--ease-precise) 0.5s;
-  }
-
-  .uf-menu-aside__link {
-    display: block;
-    margin-top: 0.75rem;
-    font-size: 0.9375rem;
-    color: var(--color-stone);
-    transition: color var(--duration-micro) var(--ease-precise);
-  }
-
-  .uf-menu-aside__link:hover {
-    color: var(--color-off-white);
-  }
-
-  .uf-menu-social {
-    margin-top: 0.75rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.25rem;
-  }
-
-  .uf-menu-social a {
-    font-size: 0.8125rem;
-    color: var(--color-stone);
-    transition: color var(--duration-micro) var(--ease-precise);
-  }
-
-  .uf-menu-social a:hover {
-    color: var(--color-off-white);
-  }
-
-  @media (min-width: 48rem) {
-    .uf-menu-inner {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 5rem;
-    }
-    .uf-menu-links {
-      flex: 1 1 auto;
-      max-width: 34rem;
-    }
-    .uf-menu-aside {
-      grid-template-columns: 1fr;
-      width: 18rem;
-      flex: 0 0 auto;
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .uf-menu-inner {
-      gap: 7rem;
-    }
-  }
+  .uf-header.is-open li:nth-child(2) [data-menu-link] > span:last-child { transition-delay: 0.06s; }
+  .uf-header.is-open li:nth-child(3) [data-menu-link] > span:last-child { transition-delay: 0.12s; }
+  .uf-header.is-open li:nth-child(4) [data-menu-link] > span:last-child { transition-delay: 0.18s; }
+  .uf-header.is-open li:nth-child(5) [data-menu-link] > span:last-child { transition-delay: 0.24s; }
+  .uf-header.is-open li:nth-child(6) [data-menu-link] > span:last-child { transition-delay: 0.3s; }
 </style>
 
 <script>
-  import { gsap } from "gsap";
+  const header = document.querySelector<HTMLElement>("[data-header]");
+  const toggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+  const menu = document.getElementById("uf-menu");
+  const label = document.querySelector<HTMLElement>("[data-menu-label]");
 
-  const header = document.getElementById("site-header");
-  const toggle = document.getElementById("menu-toggle");
-  const menu = document.getElementById("mobile-menu");
-  const links = menu?.querySelectorAll<HTMLElement>(".uf-menu-link") ?? [];
-  const megaTrigger = menu?.querySelector<HTMLElement>("[data-mega-trigger]");
-  const megaToggle = menu?.querySelector<HTMLButtonElement>("[data-mega-toggle]");
-
-  function closeMega() {
-    megaTrigger?.classList.remove("is-open");
-    megaToggle?.setAttribute("aria-expanded", "false");
+  function setOpen(open: boolean) {
+    if (!header || !toggle || !menu) return;
+    if (open) menu.hidden = false;
+    // next frame so the clip-path transition runs
+    requestAnimationFrame(() => {
+      header.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      if (label) label.textContent = open ? "Close" : "Menu";
+      const lenis = (window as any).__lenis;
+      if (open) lenis?.stop();
+      else lenis?.start();
+      document.documentElement.style.overflow = open ? "hidden" : "";
+    });
+    if (!open) window.setTimeout(() => { if (!header.classList.contains("is-open")) menu.hidden = true; }, 950);
   }
 
-  megaToggle?.addEventListener("click", (event) => {
-    event.stopPropagation();
-    const isOpen = megaTrigger?.classList.toggle("is-open") ?? false;
-    megaToggle.setAttribute("aria-expanded", String(isOpen));
+  toggle?.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"));
+  menu?.addEventListener("click", (e) => {
+    if ((e.target as HTMLElement).closest("a")) setOpen(false);
   });
-
-  const onScroll = () => {
-    if (!header) return;
-    if (window.scrollY > 40) header.classList.add("is-scrolled");
-    else header.classList.remove("is-scrolled");
-  };
-  onScroll();
-  window.addEventListener("scroll", onScroll, { passive: true });
-
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  function openMenu() {
-    menu?.classList.add("is-open");
-    header?.classList.add("menu-open");
-    toggle?.setAttribute("aria-expanded", "true");
-    document.body.style.overflow = "hidden";
-
-    if (reduceMotion) {
-      links.forEach((a) => {
-        a.style.opacity = "1";
-        a.style.transform = "none";
-      });
-    } else {
-      gsap.to(links, {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
-        stagger: 0.06,
-        delay: 0.35,
-        ease: "power3.out",
-      });
-    }
-  }
-
-  function closeMenu() {
-    menu?.classList.remove("is-open");
-    header?.classList.remove("menu-open");
-    toggle?.setAttribute("aria-expanded", "false");
-    document.body.style.overflow = "";
-    closeMega();
-
-    if (!reduceMotion) {
-      gsap.set(links, { opacity: 0, y: 24 });
-    }
-  }
-
-  toggle?.addEventListener("click", () => {
-    const isOpen = menu?.classList.contains("is-open");
-    if (isOpen) closeMenu();
-    else openMenu();
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
   });
-
-  menu?.querySelectorAll("a.uf-menu-link, .uf-mega a").forEach((a) => a.addEventListener("click", closeMenu));
 </script>

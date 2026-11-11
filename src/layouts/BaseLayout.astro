@@ -1,9 +1,8 @@
 ---
-import { Font } from "astro:assets";
+import { Font, Image } from "astro:assets";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import BrochureButton from "../components/BrochureButton.astro";
-import ContactCTA from "../sections/ContactCTA.astro";
+import { images } from "../assets/images";
 import "../styles/global.css";
 
 interface Props {
@@ -11,22 +10,10 @@ interface Props {
   description: string;
   path: string;
   ogImage?: string;
-  headerTheme?: "dark" | "light";
-  // Almost every page already embeds its own contact section (ContactCTA
-  // directly, or a bespoke "get in touch" layout, or ProductDetail's built-in
-  // form) — so this defaults to off, and only the rare page with no contact
-  // section of its own (e.g. a project detail page) opts in.
-  showContactCTA?: boolean;
+  preloader?: boolean;
 }
 
-const {
-  title,
-  description,
-  path,
-  ogImage = "/media/hero-corner.jpg",
-  headerTheme = "dark",
-  showContactCTA = false,
-} = Astro.props;
+const { title, description, path, ogImage = "/media/hero-corner.jpg", preloader = false } = Astro.props;
 const canonical = new URL(path, Astro.site).toString();
 const fullTitle = title.includes("PROMINANCE") ? title : `${title} | PROMINANCE`;
 ---
@@ -40,6 +27,7 @@ const fullTitle = title.includes("PROMINANCE") ? title : `${title} | PROMINANCE`
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0a0a0b" />
 
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -63,13 +51,29 @@ const fullTitle = title.includes("PROMINANCE") ? title : `${title} | PROMINANCE`
     <Font cssVariable="--font-sans-raw" preload />
   </head>
   <body>
-    <Header theme={headerTheme} />
+    {
+      preloader && (
+        <div class="uf-preloader" data-preloader aria-hidden="true">
+          <div class="flex w-[min(80vw,420px)] flex-col items-center gap-10">
+            <div data-preloader-logo>
+              <Image src={images.prominanceLogo} alt="" width={1060} height={198} class="h-9 w-auto brightness-0 invert" widths={[260, 520]} sizes="260px" />
+            </div>
+            <div class="w-full">
+              <div class="h-px w-full origin-left bg-champagne" data-preloader-line></div>
+              <div class="mt-4 flex justify-between label-eyebrow text-ivory/50">
+                <span>Prominance Your View</span>
+                <span data-preloader-count>000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    <Header />
     <main>
       <slot />
-      {showContactCTA && <ContactCTA />}
     </main>
     <Footer />
-    <BrochureButton />
     <script src="../animations/site.ts"></script>
   </body>
 </html>

@@ -1,49 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  /* ---- Brand palette (PROMINANCE, luxury-dark) ----
-     Every hue here is sampled directly from the Prominance logo artwork
-     (src/assets/media/prominance-logo.png: wordmark blue #126ca2, the "A"
-     mark's green #429c42) — nothing invented outside that family. Token
-     *names* stay stable (ink/off-white/stone/aluminium/brass/sage) even
-     though the values are tuned for a dark, rich, luxury register rather
-     than a flat reproduction — every component uses these semantic
-     utilities (bg-ink, text-brass, …), so repointing the values here
-     recolors the whole site without touching component files. */
-  --color-ink: #0b1a26;
-  --color-ink-soft: #142c3d;
-  --color-off-white: #f4f1ea;
-  --color-stone: #aebccb;
-  --color-aluminium: #8699a6;
+  /* ---- Obsidian & Champagne ----
+     A night-register luxury palette: warm obsidian grounds, ivory type,
+     and a single restrained champagne-bronze accent. Token names are the
+     only colour vocabulary components use. */
+  --color-ink: #0a0a0b;
+  --color-ink-soft: #131314;
+  --color-ink-raised: #1b1b1d;
+  --color-ivory: #f1ece2;
+  --color-bone: #d8d0bf;
+  --color-mute: #8f897c;
+  --color-champagne: #c9a96b;
+  --color-champagne-soft: #e4d3a6;
   --color-white: #ffffff;
-  --color-brass: #1f7cb4;
-  --color-brass-soft: #6bb3e0;
-  --color-sage: #3f9a46;
-  --color-sage-soft: #85c48c;
 
-  /* ---- Type families (chained onto Astro's font component vars,     */
-  /* which are deliberately named *-raw to avoid a :root redeclaration */
-  /* collision with these Tailwind theme tokens of the same name)      */
   --font-display: var(--font-display-raw), "Times New Roman", serif;
   --font-sans: var(--font-sans-raw), "Segoe UI", sans-serif;
 
-  /* ---- Motion timing (from spec: micro/normal/cinematic) ---- */
-  --ease-precise: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --duration-micro: 320ms;
-  --duration-normal: 650ms;
-  --duration-cinematic: 1200ms;
-
-  /* ---- Layout ---- */
-  --container-max: 1600px;
-  --gutter: clamp(1.25rem, 4vw, 4rem);
-
-  --breakpoint-xs: 23rem;
+  --ease-lux: cubic-bezier(0.16, 1, 0.3, 1);
+  --container-max: 1680px;
+  --gutter: clamp(1.25rem, 4.5vw, 5rem);
 }
 
 @layer base {
   :root {
-    color-scheme: light;
+    color-scheme: dark;
   }
 
   * {
@@ -51,41 +33,28 @@
   }
 
   html {
-    background: var(--color-off-white);
+    background: var(--color-ink);
     scroll-behavior: auto;
   }
 
   body {
-    background: var(--color-off-white);
-    color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-ivory);
     font-family: var(--font-sans);
-    font-weight: 400;
+    font-weight: 300;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  /* A faint, fixed film-grain wash — the tactile quality of a printed catalogue,
-     never sharp enough to read as a texture, only as depth. */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-    pointer-events: none;
-    opacity: 0.035;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    overflow-x: clip;
   }
 
   ::selection {
-    background: var(--color-ink);
-    color: var(--color-off-white);
+    background: var(--color-champagne);
+    color: var(--color-ink);
   }
 
   a {
     color: inherit;
+    text-decoration: none;
   }
 
   img,
@@ -94,25 +63,18 @@
     max-width: 100%;
   }
 
-  /* Editorial heading rhythm — thin, neat geometric sans, not a display serif */
   h1,
   h2,
   h3 {
     font-family: var(--font-display);
     font-weight: 300;
-    line-height: 1.05;
-    letter-spacing: -0.01em;
+    line-height: 1.02;
+    letter-spacing: -0.015em;
   }
 
-  /* Visible, unobtrusive focus ring — never remove focus outlines */
   :focus-visible {
-    outline: 1px solid var(--color-ink);
+    outline: 1px solid var(--color-champagne);
     outline-offset: 4px;
-  }
-
-  ::-moz-selection {
-    background: var(--color-ink);
-    color: var(--color-off-white);
   }
 }
 
@@ -124,118 +86,213 @@
     padding-inline: var(--gutter);
   }
 
-  /* Small uppercase editorial label, used everywhere as an eyebrow.
-     No `color` here on purpose: it inherits by default anyway, and setting it
-     explicitly fights same-specificity `text-*` utilities on the same
-     element depending on cascade-layer source order. */
   .label-eyebrow {
     font-family: var(--font-sans);
     font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.22em;
+    font-weight: 500;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
-  }
-
-  /* Thin architectural rule — the signature frame line */
-  .rule-thin {
-    height: 1px;
-    background: currentColor;
-    opacity: 0.16;
   }
 
   .text-balance {
     text-wrap: balance;
   }
 
-  .transition-precise {
-    transition-timing-function: var(--ease-precise);
-  }
-
-  /* Oversized, near-invisible serif numeral set behind a section's heading —
-     the editorial-catalogue numbering device used across the site. */
-  .uf-numeral {
-    position: absolute;
-    top: -0.35em;
+  .display-xl {
     font-family: var(--font-display);
-    font-weight: 400;
-    line-height: 1;
-    font-size: clamp(6rem, 16vw, 13rem);
+    font-weight: 300;
+    font-size: clamp(3.25rem, 10.5vw, 10rem);
+    line-height: 0.92;
     letter-spacing: -0.03em;
-    opacity: 0.05;
-    pointer-events: none;
-    user-select: none;
-    z-index: 0;
   }
 
-  .text-brass {
-    color: var(--color-brass);
+  .display-lg {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.5rem, 6.4vw, 6rem);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+  }
+
+  .display-md {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.9rem, 3.6vw, 3.25rem);
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+  }
+
+  .lead {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.35rem, 2.1vw, 1.9rem);
+    line-height: 1.35;
+  }
+
+  .hairline {
+    height: 1px;
+    background: currentColor;
+    opacity: 0.18;
+  }
+
+  .text-champagne {
+    color: var(--color-champagne);
+  }
+
+  /* Masked line wrapper produced by site.ts for [data-split] text */
+  .split-mask {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+  }
+  .split-inner {
+    display: inline-block;
+    will-change: transform;
   }
 }
 
-/* Progressive-enhancement reveal state: only hidden pre-animation when JS is present */
-html.js [data-reveal] {
-  opacity: 0;
-}
-
-html.js [data-reveal]:not([data-reveal="fade"]) {
-  transform: translateY(28px);
+/* ---------- Pre-hydration hide (only when JS is running) ----------
+   Everything animated is hidden until site.ts has split text and built its
+   triggers, then `uf-ready` is added. A hard failsafe in site.ts adds the
+   class regardless, so content can never stay invisible. */
+html.js:not(.uf-ready) [data-split],
+html.js:not(.uf-ready) [data-reveal],
+html.js:not(.uf-ready) [data-img-reveal] {
+  visibility: hidden;
 }
 
 html.js [data-line-draw] {
-  transform: scaleX(0);
   transform-origin: left center;
 }
 
-/* Hides the native OS/browser cursor whenever the custom one is active
-   (site.ts adds this class only on fine-pointer, non-reduced-motion
-   devices), so only the Prominance mark shows — never both at once. */
-html.uf-custom-cursor,
-html.uf-custom-cursor * {
-  cursor: none !important;
+/* ---------- Preloader ---------- */
+.uf-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  background: var(--color-ink);
+  color: var(--color-ivory);
+}
+.uf-preloader[hidden] {
+  display: none;
 }
 
-/* Custom cursor — desktop only, added by animations/site.ts.
-   The actual "A" mark cropped from the Prominance logo (src/assets/media/
-   prominance-a-mark.png), not a generic dot/ring, so the cursor itself is
-   the brand mark. */
+/* ---------- Scroll progress ---------- */
+.uf-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--color-champagne);
+  transform: scaleX(0);
+  transform-origin: left;
+  z-index: 120;
+  pointer-events: none;
+}
+
+/* ---------- Cursor ---------- */
+html.uf-custom-cursor,
+html.uf-custom-cursor a,
+html.uf-custom-cursor button {
+  cursor: none;
+}
 .uf-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 20px;
-  height: 18px;
-  margin-left: -2px;
-  margin-top: -1px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  transform-origin: 10% 6%;
-  filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.35));
+  z-index: 250;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border: 1px solid var(--color-champagne);
+  border-radius: 999px;
   pointer-events: none;
-  z-index: 200;
+  mix-blend-mode: difference;
   opacity: 0;
-  transition: opacity var(--duration-micro) ease, width var(--duration-micro) var(--ease-precise), height var(--duration-micro) var(--ease-precise), margin var(--duration-micro) var(--ease-precise), transform var(--duration-micro) var(--ease-precise);
+  transition: width 0.45s var(--ease-lux), height 0.45s var(--ease-lux), margin 0.45s var(--ease-lux),
+    background-color 0.3s ease, opacity 0.3s ease;
 }
-
 .uf-cursor.is-visible {
-  opacity: 0.9;
-}
-
-/* Rotation is applied in site.ts, baked into the same inline transform that
-   positions the cursor each frame — a transform set here would be
-   overwritten every frame by that positioning write. */
-.uf-cursor.is-hovering {
-  width: 34px;
-  height: 31px;
-  margin-left: -3px;
-  margin-top: -2px;
   opacity: 1;
 }
-
+.uf-cursor.is-hover {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  background: rgb(201 169 107 / 0.18);
+}
 @media (hover: none), (pointer: coarse) {
   .uf-cursor {
     display: none;
   }
+}
+
+/* ---------- Links & buttons ---------- */
+.btn-lux {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.15rem 2.1rem;
+  border: 1px solid var(--color-champagne);
+  color: var(--color-ivory);
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.5s var(--ease-lux);
+}
+.btn-lux::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-champagne);
+  transform: translateY(101%);
+  transition: transform 0.6s var(--ease-lux);
+  z-index: -1;
+}
+.btn-lux:hover {
+  color: var(--color-ink);
+}
+.btn-lux:hover::before {
+  transform: translateY(0);
+}
+
+.link-underline {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right;
+  transition: transform 0.6s var(--ease-lux);
+  opacity: 0.5;
+}
+.link-underline:hover::after {
+  transform: scaleX(0.35);
+}
+
+/* ---------- Lenis ---------- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -243,22 +300,62 @@ html.uf-custom-cursor * {
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
 }
 
-/* Lenis smooth-scroll support */
-html.lenis,
-html.lenis body {
-  height: auto;
+/* ======================================================================
+   Shiny gold — every champagne text becomes a polished-gold gradient that
+   slowly glints, with a soft glow behind it. Un-layered so it always wins
+   over the Tailwind colour utilities.
+   ====================================================================== */
+@keyframes gold-glint {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 220% 50%;
+  }
+}
+.text-champagne,
+.text-champagne-soft,
+.gold-text,
+.uf-wordmark .split-inner {
+  background-image: linear-gradient(
+    100deg,
+    #8a6522 0%,
+    #c99d47 14%,
+    #f2d98e 28%,
+    #fff6cf 38%,
+    #e3bd5f 50%,
+    #a97c2c 64%,
+    #d9b35a 78%,
+    #8a6522 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gold-glint 9s linear infinite;
+}
+.text-champagne,
+.text-champagne-soft,
+.gold-text {
+  filter: drop-shadow(0 0 7px rgba(236, 200, 112, 0.32)) drop-shadow(0 0 22px rgba(201, 162, 78, 0.2));
+}
+/* the wordmark glows as one piece (the per-word mask would clip a glow) */
+.uf-wordmark {
+  color: transparent;
+  filter: drop-shadow(0 0 14px rgba(236, 200, 112, 0.45)) drop-shadow(0 0 48px rgba(201, 162, 78, 0.28));
 }
 
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
+@media (prefers-reduced-motion: reduce) {
+  .text-champagne,
+  .text-champagne-soft,
+  .gold-text,
+  .uf-wordmark .split-inner {
+    animation: none;
+  }
 }

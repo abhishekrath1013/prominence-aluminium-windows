@@ -1,0 +1,176 @@
+---
+// Content is drawn from the supplied Blender file "Hardware Components_02.blend":
+// the hardware kit of the Graf 45 sliding system (3T3P and 2T 4P configurations) plus
+// the friction stay / safety catch used on openable sashes. Part counts below are the
+// number of separate parts modelled in that file — no performance figures are invented.
+import { engineeringStats } from "../data/company";
+
+const cycles = engineeringStats.find((s) => s.unit === "cycles")?.value ?? "1,00,000";
+
+const tabs = [
+  {
+    key: "handle",
+    label: "Handle & lock",
+    kicker: "Touch point",
+    title: "The handle you use every day.",
+    body: "A lever handle on a connector pin drives the handle lock, which is fixed through the sash stile with cross-head screws. It is the one part of the system your hand touches, so it is machined, brushed and finished like jewellery.",
+    material: "Brushed aluminium, black anodised",
+    parts: ["Lever handle", "Handle lock", "Connector pin", "M3.5 cross-head screw"],
+    count: 4,
+  },
+  {
+    key: "receiver",
+    label: "Locking receiver",
+    kicker: "Frame side",
+    title: "Where the lock finds its hold.",
+    body: "Set into the frame, the receiver catches the handle lock and holds the sash against the frame. It is carried on two screwing blocks and fixed with M4 socket-head screws, so the load spreads into the profile rather than a single point.",
+    material: "Brushed aluminium, black anodised",
+    parts: ["Locking receiver", "Receiver screwing block ×2", "M4 × 20 socket-head screw ×2"],
+    count: 5,
+  },
+  {
+    key: "motion",
+    label: "Roller & soft-close",
+    kicker: "Movement",
+    title: "Heavy glass. Effortless motion.",
+    body: "The roller carriage takes the weight of the sash on its track. A sash raiser sets the height, and a slimline 32 mm shock absorber slows the sash at the end of its travel so a big panel closes quietly instead of slamming.",
+    material: "Steel, cast aluminium, rubber",
+    parts: ["Roller carriage", "Sash raiser (3 parts)", "Slimline shock absorber, 32 mm"],
+    count: 5,
+  },
+  {
+    key: "stay",
+    label: "Friction stay",
+    kicker: "Openable sashes",
+    title: "Open it anywhere. It stays there.",
+    body: "On casement sashes the friction stay is a folding arm of six steel parts that carries the sash and holds it at any angle you choose — a breeze stays a breeze, even when the wind picks up.",
+    material: "Steel",
+    parts: ["Stay arms and links (6 parts)", "M5 set screw"],
+    count: 7,
+  },
+  {
+    key: "catch",
+    label: "Safety catch",
+    kicker: "Peace of mind",
+    title: "Ventilation, with a limit.",
+    body: "A sash part and a frame part joined by a restraint wire limit how far an openable sash can swing, so you can leave it ajar for air without leaving it open. Two end caps and six M5 screws fix it into the profile.",
+    material: "Black metal, steel wire",
+    parts: ["Sash part", "Frame part", "Restraint wire", "End caps ×2", "M5 × 20 screw ×6"],
+    count: 11,
+  },
+  {
+    key: "corner",
+    label: "Corner joinery",
+    kicker: "Fabrication",
+    title: "Square corners, locked for life.",
+    body: "Four corner cleats and an alignment block lock the mitred corners of the frame square and tight before the welds or screws ever take load — so every frame starts square and stays that way.",
+    material: "Brushed aluminium",
+    parts: ["Corner cleats ×4", "Corner alignment block"],
+    count: 5,
+  },
+  {
+    key: "seal",
+    label: "Seals & drainage",
+    kicker: "Weather",
+    title: "Rain stays out. Water finds its way.",
+    body: "Gaskets seal the glass and the sash. A non-return valve with its ball lets water drain out of the frame but stops wind and insects coming back in, and a rain-cover cap protects the drainage slot from the outside.",
+    material: "Rubber, powder-coated aluminium",
+    parts: ["Glazing gasket", "Sash gasket", "Non-return valve + ball", "Rain-cover cap"],
+    count: 5,
+  },
+];
+const total = tabs.reduce((n, t) => n + t.count, 0);
+---
+
+<section class="relative bg-ink" data-hw data-tabs={JSON.stringify(tabs.map((t) => ({ key: t.key, count: t.count })))}>
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_72%_50%,rgba(201,169,107,0.12),transparent_60%)]"></div>
+
+  <div class="container-frame relative grid min-h-[100svh] w-full grid-cols-1 items-center gap-8 py-24 md:grid-cols-12 md:gap-6 md:py-16">
+    <div class="md:col-span-5">
+      <p class="label-eyebrow text-champagne" data-reveal="fade">Inside every Graf</p>
+      <h2 class="display-md mt-4 text-balance" data-reveal="up">The parts you never see, assembled.</h2>
+      <p class="mt-5 max-w-md text-sm leading-relaxed text-ivory/60" data-reveal="up">
+        {total} components from the Graf 45 hardware kit, modelled one by one. Scroll and watch them come together —
+        the locking and running hardware is cycle-tested to {cycles} cycles.
+      </p>
+
+      <div class="mt-7 flex flex-wrap gap-2" role="tablist" data-reveal="up">
+        {
+          tabs.map((t, i) => (
+            <button type="button" role="tab" data-hw-tab={t.key} aria-pressed={i === 0 ? "true" : "false"} class="cfg-pill">
+              <span>{t.label}</span>
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="mt-8 min-h-[15rem]">
+        {
+          tabs.map((t, i) => (
+            <article data-hw-panel={t.key} hidden={i !== 0}>
+              <p class="label-eyebrow text-champagne">{t.kicker}</p>
+              <h3 class="mt-3 font-display text-3xl font-light leading-tight md:text-4xl">{t.title}</h3>
+              <p class="mt-4 max-w-md text-sm leading-relaxed text-ivory/65">{t.body}</p>
+              <dl class="mt-6 grid max-w-md grid-cols-2 gap-x-6 gap-y-3 border-t border-ivory/15 pt-5 text-sm">
+                <div>
+                  <dt class="label-eyebrow text-ivory/40">Parts</dt>
+                  <dd class="mt-1">{t.count}</dd>
+                </div>
+                <div>
+                  <dt class="label-eyebrow text-ivory/40">Material</dt>
+                  <dd class="mt-1">{t.material}</dd>
+                </div>
+                <div class="col-span-2">
+                  <dt class="label-eyebrow text-ivory/40">In this assembly</dt>
+                  <dd class="mt-1 text-ivory/75">{t.parts.join(" · ")}</dd>
+                </div>
+              </dl>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="relative md:col-span-7">
+      <div data-hw-canvas class="h-[56svh] w-full md:h-[80svh]"></div>
+      <p class="hw-loading pointer-events-none absolute inset-0 grid place-items-center label-eyebrow text-ivory/40">Loading 3D…</p>
+
+      <div class="pointer-events-none absolute inset-x-0 bottom-3 flex items-end justify-between px-1 md:bottom-5">
+        <p class="label-eyebrow text-ivory/60"><span class="text-champagne" data-hw-count>00</span> / <span data-hw-total>00</span> parts assembled</p>
+        <div class="pointer-events-auto flex items-center gap-4">
+          <span class="label-eyebrow hidden text-ivory/45 md:inline">Scroll to assemble · drag to turn</span>
+          <button type="button" data-hw-toggle class="cfg-pill md:hidden"><span data-hw-toggle-label>Assemble</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  [data-hw][data-hw-ready] .hw-loading {
+    display: none;
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-hw]");
+  if (root) {
+    let started = false;
+    const boot = async () => {
+      if (started) return;
+      started = true;
+      try {
+        const probe = document.createElement("canvas");
+        if (!(probe.getContext("webgl2") || probe.getContext("webgl"))) throw new Error("no webgl");
+        const { mountHardware } = await import("../animations/hardware");
+        mountHardware(root, JSON.parse(root.dataset.tabs ?? "[]"));
+        window.dispatchEvent(new Event("resize"));
+      } catch (e) {
+        const l = root.querySelector(".hw-loading");
+        if (l) l.textContent = "3D preview needs WebGL.";
+        console.warn(e);
+      }
+    };
+    new IntersectionObserver((es) => es.some((e) => e.isIntersecting) && boot(), { rootMargin: "1400px 0px" }).observe(root);
+  }
+</script>

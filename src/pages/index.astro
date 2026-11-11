@@ -1,37 +1,541 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Hero from "../sections/Hero.astro";
-import QuoteStrip from "../sections/QuoteStrip.astro";
-import Certifications from "../sections/Certifications.astro";
-import CategoryGrid from "../sections/CategoryGrid.astro";
-import WindowStory from "../sections/WindowStory.astro";
-import BrandStatement from "../sections/BrandStatement.astro";
-import Configurator from "../sections/Configurator.astro";
-import ProductCollection from "../sections/ProductCollection.astro";
-import ArchitecturalSolutions from "../sections/ArchitecturalSolutions.astro";
-import Projects from "../sections/Projects.astro";
-import FAQ from "../sections/FAQ.astro";
-import ContactCTA from "../sections/ContactCTA.astro";
-import Newsletter from "../sections/Newsletter.astro";
+import StudioInvite from "../components/StudioInvite.astro";
+import ArrowLink from "../components/ArrowLink.astro";
+import Configurator from "../components/Configurator.astro";
+import { products } from "../data/products";
+import { projects } from "../data/projects";
+
+// Hero: three pillars. Hovering a circle swaps the background video and lights its line.
+// Stock footage: Mixkit (free licence) — see public/media/stock.
+const pillars = [
+  { label: "Open", href: "/sliding/", line: "Open your home to the view,", video: "/media/stock/pillar-open" },
+  { label: "Endure", href: "/about-us/", line: "Build it to endure,", video: "/media/stock/pillar-endure" },
+  { label: "Personalise", href: "/products/#finishes", line: "Finish it in your own colour.", video: "/media/stock/pillar-personalise" },
+];
+
+const gallery = products; // seven systems
+// Height / width profile: the centre card is the tallest, like a fanned strip.
+const profile = [
+  { h: "h-[26vh]", w: "w-[10vw]" },
+  { h: "h-[34vh]", w: "w-[10vw]" },
+  { h: "h-[44vh]", w: "w-[10vw]" },
+  { h: "h-[58vh]", w: "w-[20vw]" },
+  { h: "h-[44vh]", w: "w-[10vw]" },
+  { h: "h-[34vh]", w: "w-[10vw]" },
+  { h: "h-[26vh]", w: "w-[10vw]" },
+];
+
+// Two columns of framed views — real project imagery interleaved with luxury aluminium-window stock.
+const P = (i: number) => ({ img: projects[i].image, src: undefined as string | undefined });
+const G = (i: number) => ({ src: `/media/stock/gal-${i}.jpg`, img: undefined });
+const leftCol = [G(0), P(0), G(3), P(2), G(5), P(4)];
+const rightCol = [P(1), G(1), P(3), G(4), P(5), G(6)];
 ---
 
 <BaseLayout
-  title="PROMINANCE — Precision-Engineered Aluminium Window & Door Systems"
-  description="PROMINANCE crafts precision-engineered aluminium window, door and facade systems in 6063 T-6 virgin aluminium — built for architects who specify to the millimetre, so the frame disappears and the architecture begins."
+  title="PROMINANCE — Prominance Your View"
+  description="Aluminium window, door and facade systems for the most considered homes. Concealed frames, panoramic glass and a 25-year surface warranty — crafted in Coimbatore. Visit the Experience Studio."
   path="/"
-  headerTheme="dark"
+  ogImage="/media/hero-villa-poster.jpg"
+  preloader
 >
-  <Hero />
-  <QuoteStrip />
-  <Certifications />
-  <CategoryGrid />
-  <WindowStory />
-  <BrandStatement />
-  <Configurator />
-  <ProductCollection />
-  <ArchitecturalSolutions />
-  <Projects />
-  <FAQ />
-  <ContactCTA />
-  <Newsletter />
+    <!-- ============ 1. HERO — three pillars (sits outside the stack) ============ -->
+    <section class="relative min-h-[100svh] overflow-hidden bg-ink" data-pick-root>
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="uf-layer is-on" data-pick-layer="0">
+          <video class="h-full w-full object-cover" data-pick-video src="/media/stock/hero-default.mp4" poster="/media/stock/hero-default.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+        </div>
+        {
+          pillars.map((p, i) => (
+            <div class="uf-layer" data-pick-layer={i + 1}>
+              <video class="h-full w-full object-cover" data-pick-video data-src={`${p.video}.mp4`} poster={`${p.video}.jpg`} muted loop playsinline preload="none" aria-hidden="true"></video>
+            </div>
+          ))
+        }
+        <div class="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/25 to-ink/80"></div>
+        <div class="uf-grain absolute inset-0"></div>
+      </div>
+
+      <h1 class="uf-wordmark pointer-events-none absolute inset-x-0 top-[13svh] text-center" data-split data-split-delay="0.2" aria-label="Aluminium Windows">ALUMINIUM WINDOWS</h1>
+
+      <div class="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-ivory/35"></div>
+
+      <div class="absolute inset-x-0 top-1/2 z-[2] flex -translate-y-1/2 justify-center" data-pick-circles>
+        {
+          pillars.map((p, i) => (
+            <a href={p.href} class="uf-circle" data-pick={i + 1}>
+              <span class="uf-plus" aria-hidden="true"></span>
+              <span class="uf-circle-label">{p.label}</span>
+            </a>
+          ))
+        }
+      </div>
+
+      <p class="uf-lines absolute inset-x-0 bottom-[11svh] z-[2] mx-auto max-w-3xl px-6 text-center">
+        {pillars.map((p, i) => <span class="uf-line" data-line={i + 1}>{p.line}</span>)}
+      </p>
+
+    </section>
+
+  <div class="uf-stack" data-stack>
+    <!-- ============ 2. MANIFESTO ============ -->
+    <section class="uf-panel relative flex min-h-[100svh] items-center bg-ink-soft py-28" data-panel style="z-index:2">
+      <div class="container-frame w-full">
+        <p class="label-eyebrow text-champagne" data-reveal="fade">Our belief</p>
+        <p class="uf-manifesto mt-8 max-w-6xl" data-scrub-text>
+          A great home is measured not by its walls, but by what it lets in. We engineer the thinnest possible line between you and the world — and build it to endure.
+        </p>
+        <div class="mt-16 grid max-w-4xl grid-cols-3 gap-6" data-reveal-group>
+          {
+            [
+              { v: "25 mm", l: "Concealed sash face" },
+              { v: "25 yrs", l: "Surface warranty" },
+              { v: "100+", l: "Finishes" },
+            ].map((s) => (
+              <div class="border-t border-ivory/20 pt-5" data-reveal="up">
+                <p class="font-display text-4xl font-light text-champagne-soft md:text-6xl">{s.v}</p>
+                <p class="label-eyebrow mt-3 text-ivory/50">{s.l}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <div class="uf-dwell" aria-hidden="true"></div>
+
+    <!-- ============ 3. THE COLLECTION — fanned strip ============ -->
+    <section class="uf-gallery relative flex min-h-[100svh] flex-col bg-ivory text-ink" data-gallery style="z-index:3">
+      <div class="absolute inset-0">
+        {
+          gallery.map((p, i) => (
+            <div class="uf-layer" data-gal-bg={i}>
+              <img src={`/media/stock/gal-${i}.jpg`} alt="" class="h-full w-full object-cover" loading="lazy" decoding="async" />
+            </div>
+          ))
+        }
+        <div class="uf-gal-scrim absolute inset-0 bg-ink/45"></div>
+      </div>
+
+      <div class="uf-gal-fg relative z-[2] container-frame flex items-start justify-between pt-28 md:pt-32">
+        <span class="font-display text-3xl font-light md:text-4xl">Sliding</span>
+        <span class="label-eyebrow mt-3 hidden text-center md:block">Seven systems. One standard.</span>
+        <span class="font-display text-3xl font-light md:text-4xl">Casement</span>
+      </div>
+
+      <div class="relative z-[2] flex flex-1 items-center justify-center py-8">
+        <ul class="uf-strip flex items-center justify-center gap-[0.7vw]" data-gal-strip>
+          {
+            gallery.map((p, i) => (
+              <li class={`uf-card ${profile[i].h} ${profile[i].w}`} data-gal-card={i}>
+                <a href={`/${p.slug}/`} class="group relative block h-full w-full overflow-hidden" aria-label={`${p.name} — ${p.headline}`}>
+                  <img src={`/media/stock/gal-${i}.jpg`} alt={`${p.fullTitle} — luxury aluminium windows`} class="h-full w-full object-cover transition-transform duration-[1400ms] ease-[var(--ease-lux)] group-hover:scale-[1.08]" loading="lazy" decoding="async" />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="uf-gal-fg relative z-[2] container-frame flex items-end justify-between pb-10">
+        <div class="min-h-[4.5rem]" data-gal-caption aria-live="polite">
+          <p class="font-display text-3xl font-light md:text-5xl" data-gal-name>The Collection</p>
+          <p class="mt-2 text-sm opacity-70" data-gal-line>Hover a system to explore it.</p>
+        </div>
+        <ArrowLink href="/products/">All systems</ArrowLink>
+      </div>
+    </section>
+
+  </div>
+
+    <!-- ============ 4. RESIDENCES — framed views drifting either side of the promise ============ -->
+    <section class="relative h-[100svh] min-h-[680px] overflow-hidden bg-black" data-drift-root>
+      <div class="uf-drift uf-drift-l" aria-hidden="true">
+        <div class="uf-drift-col uf-up">
+          {[...leftCol, ...leftCol].map((it) => (it.src ? <figure class="uf-frame"><img src={it.src} alt="" loading="lazy" decoding="async" /></figure> : <figure class="uf-frame"><Image src={it.img!} alt="" widths={[300, 500]} sizes="16vw" loading="lazy" /></figure>))}
+        </div>
+      </div>
+      <div class="uf-drift uf-drift-r" aria-hidden="true">
+        <div class="uf-drift-col uf-down">
+          {[...rightCol, ...rightCol].map((it) => (it.src ? <figure class="uf-frame"><img src={it.src} alt="" loading="lazy" decoding="async" /></figure> : <figure class="uf-frame"><Image src={it.img!} alt="" widths={[300, 500]} sizes="16vw" loading="lazy" /></figure>))}
+        </div>
+      </div>
+
+      <div class="relative z-[2] mx-auto flex h-full max-w-[34rem] flex-col justify-center px-6 md:px-0" data-reveal-group>
+        <p class="label-eyebrow text-champagne" data-reveal="fade">The Prominance standard</p>
+        <p class="mt-7 font-display text-[clamp(1.55rem,2.5vw,2.25rem)] font-light leading-[1.22] text-ivory" data-reveal="up">
+          For those who believe a home is judged by what it lets in — light at dawn, the garden at dusk, a horizon with no line drawn across it.
+        </p>
+        <p class="mt-6 text-[0.95rem] leading-relaxed text-ivory/70" data-reveal="up">
+          We do not sell windows. We prescribe a view: aluminium engineered to disappear, hardware you never have to think
+          about, and a finish chosen to belong to your architecture alone.
+        </p>
+        <p class="label-eyebrow mt-8 text-ivory/45" data-reveal="up">6063 T-6 virgin aluminium &nbsp;·&nbsp; 25-year surface warranty &nbsp;·&nbsp; 100+ finishes</p>
+        <div class="mt-10 flex flex-wrap items-center gap-x-9 gap-y-5" data-reveal="up">
+          <a href="#studio" class="btn-lux label-eyebrow">Stand at the glass</a>
+          <ArrowLink href="/projects/">All residences</ArrowLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 5. 3D CONFIGURATOR ============ -->
+    <Configurator />
+
+    <!-- Hardware assembly section is built (components/HardwareAssembly.astro) but hidden for now.
+         To bring it back: import HardwareAssembly above and render <HardwareAssembly /> here. -->
+
+    <!-- ============ 7. STUDIO ============ -->
+    <StudioInvite />
 </BaseLayout>
+
+<style is:global>
+  /* ---------- Stacked panels (z-index scroll) ---------- */
+  .uf-stack {
+    position: relative;
+  }
+  .uf-panel {
+    position: relative;
+    will-change: transform;
+  }
+  .uf-dwell {
+    display: none;
+  }
+  @media (min-width: 1024px) and (min-height: 760px) {
+    .uf-panel {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      min-height: 0;
+      overflow: hidden;
+    }
+    /* Empty runway: the current panel stays pinned and readable while this scrolls past. */
+    .uf-dwell {
+      display: block;
+      height: 90svh;
+      pointer-events: none;
+    }
+  }
+
+  /* ---------- Hero ---------- */
+  .uf-layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.06);
+    transition: opacity 1s var(--ease-lux), transform 1.6s var(--ease-lux);
+  }
+  .uf-layer.is-on {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .uf-grain {
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .uf-wordmark {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.1rem, 8.1vw, 9rem);
+    line-height: 1;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    color: transparent;
+  }
+  .uf-circle {
+    --d: clamp(112px, 19.5vw, 280px);
+    position: relative;
+    width: var(--d);
+    height: var(--d);
+    margin-left: calc(var(--d) * -0.1);
+    display: block;
+    border: 1px solid rgb(241 236 226 / 0.35);
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: transform 0.8s var(--ease-lux), border-color 0.5s ease, background-color 0.6s ease, opacity 0.6s ease;
+  }
+  .uf-circle:first-child {
+    margin-left: 0;
+  }
+  /* The "+" sits exactly on the centre of the circle — i.e. on the hairline. */
+  .uf-circle-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(50% + 26px);
+    text-align: center;
+    font-size: clamp(0.7rem, 1.1vw, 1rem);
+  }
+  .uf-plus {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 22px;
+    height: 22px;
+    translate: -50% -50%;
+  }
+  .uf-plus::before,
+  .uf-plus::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    margin-top: -0.5px;
+    background: currentColor;
+    transition: transform 0.5s var(--ease-lux);
+  }
+  .uf-plus::after {
+    transform: rotate(90deg);
+  }
+  [data-pick-root][data-active] .uf-circle {
+    opacity: 0.7;
+  }
+  .uf-circle.is-active {
+    opacity: 1 !important;
+    transform: scale(1.07);
+    border-color: #fff;
+    background: rgb(255 255 255 / 0.06);
+    z-index: 3;
+  }
+  .uf-circle.is-active .uf-plus::after {
+    transform: rotate(0deg);
+  }
+
+  .uf-lines {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(1rem, 2.1vw, 1.95rem);
+    line-height: 1.22;
+    letter-spacing: 0.01em;
+  }
+  .uf-line {
+    display: block;
+    color: rgb(241 236 226 / 0.78);
+    transition: color 0.6s ease, opacity 0.6s ease;
+  }
+  [data-pick-root][data-active] .uf-line {
+    opacity: 0.35;
+  }
+  [data-pick-root][data-active="1"] .uf-line[data-line="1"],
+  [data-pick-root][data-active="2"] .uf-line[data-line="2"],
+  [data-pick-root][data-active="3"] .uf-line[data-line="3"] {
+    opacity: 1;
+    color: #fff;
+  }
+
+  /* ---------- Manifesto ---------- */
+  .uf-manifesto {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.9rem, 4.7vw, 4.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  /* ---------- Gallery ---------- */
+  .uf-gallery {
+    --gal-fg: #8a6d33;
+  }
+  .uf-gal-fg {
+    color: var(--gal-fg);
+    transition: color 0.6s ease;
+  }
+  .uf-gal-scrim {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .uf-gallery.is-lit {
+    --gal-fg: #f1ece2;
+  }
+  .uf-gallery.is-lit .uf-gal-scrim {
+    opacity: 1;
+  }
+  .uf-card {
+    flex: none;
+    position: relative;
+    z-index: 1;
+    transition: translate 0.9s var(--ease-lux), outline-color 0.4s ease;
+    outline: 1px solid transparent;
+    outline-offset: 5px;
+  }
+  /* the centre card stays on top so the others can fan out from behind it */
+  .uf-card[data-gal-card="3"] {
+    z-index: 5;
+  }
+  .uf-card.is-on {
+    translate: 0 -1.2vh;
+    outline-color: rgb(241 236 226 / 0.9);
+  }
+  @media (max-width: 1023px) {
+    .uf-strip {
+      justify-content: flex-start;
+      overflow-x: auto;
+      width: 100%;
+      padding-inline: var(--gutter);
+      gap: 12px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .uf-card {
+      width: 58vw !important;
+      height: 52svh !important;
+      scroll-snap-align: center;
+    }
+  }
+
+  /* ---------- Residences: framed views drifting either side ---------- */
+  .uf-drift {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: clamp(120px, 12.5vw, 200px);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+    pointer-events: none;
+  }
+  .uf-drift-l {
+    left: clamp(0.75rem, 10vw, 13rem);
+  }
+  .uf-drift-r {
+    right: clamp(0.75rem, 10vw, 13rem);
+  }
+  /* Endless, slow, opposite-direction scroll. Each set is rendered twice and the
+     column travels exactly one set, so the loop has no seam. */
+  .uf-drift-col {
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+  }
+  .uf-up {
+    animation: uf-col-up 140s linear infinite;
+  }
+  .uf-down {
+    animation: uf-col-down 160s linear infinite;
+  }
+  @keyframes uf-col-up {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
+  }
+  @keyframes uf-col-down {
+    from { transform: translateY(-50%); }
+    to { transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .uf-up, .uf-down { animation: none; }
+  }
+  .uf-frame {
+    margin: 0 0 8px;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: #111;
+  }
+  .uf-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.92) brightness(0.92);
+  }
+  @media (max-width: 767px) {
+    .uf-drift {
+      opacity: 0.3;
+      width: 34vw;
+    }
+    .uf-drift-l {
+      left: -6vw;
+    }
+    .uf-drift-r {
+      right: -6vw;
+    }
+  }
+</style>
+
+<script>
+  // ---- Hero: hover a circle → swap background, light its line -------------
+  const root = document.querySelector<HTMLElement>("[data-pick-root]");
+  if (root) {
+    const layers = Array.from(root.querySelectorAll<HTMLElement>("[data-pick-layer]"));
+    const circles = Array.from(root.querySelectorAll<HTMLAnchorElement>(".uf-circle"));
+    const wrap = root.querySelector<HTMLElement>("[data-pick-circles]");
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+
+    const vids = layers.map((l) => l.querySelector<HTMLVideoElement>("video"));
+    const loadVid = (v: HTMLVideoElement | null) => {
+      if (v && v.dataset.src && !v.src) {
+        v.src = v.dataset.src;
+        v.preload = "auto";
+        v.load();
+      }
+    };
+    // Warm the hover clips once the first screen has settled.
+    window.addEventListener("load", () => window.setTimeout(() => vids.forEach(loadVid), 2500), { once: true });
+
+    const pick = (n: number) => {
+      vids.forEach((v, k) => {
+        if (!v) return;
+        if (k === n) {
+          loadVid(v);
+          v.play().catch(() => {});
+        } else if (k !== 0) {
+          window.setTimeout(() => {
+            if (!layers[k].classList.contains("is-on")) v.pause();
+          }, 1100);
+        }
+      });
+      layers.forEach((l) => l.classList.toggle("is-on", Number(l.dataset.pickLayer) === n));
+      circles.forEach((c) => c.classList.toggle("is-active", Number(c.dataset.pick) === n));
+      if (n) root.setAttribute("data-active", String(n));
+      else root.removeAttribute("data-active");
+    };
+
+    circles.forEach((c) => {
+      const n = Number(c.dataset.pick);
+      c.addEventListener("pointerenter", () => pick(n));
+      c.addEventListener("focus", () => pick(n));
+      c.addEventListener("click", (e) => {
+        // On touch: first tap previews the pillar, second tap follows the link.
+        if (coarse && !c.classList.contains("is-active")) {
+          e.preventDefault();
+          pick(n);
+        }
+      });
+    });
+    wrap?.addEventListener("pointerleave", () => {
+      if (!coarse) pick(0);
+    });
+  }
+
+  // ---- Gallery: hover a card → full-bleed background + caption -------------
+  const gal = document.querySelector<HTMLElement>("[data-gallery]");
+  if (gal) {
+    const bgs = Array.from(gal.querySelectorAll<HTMLElement>("[data-gal-bg]"));
+    const cards = Array.from(gal.querySelectorAll<HTMLElement>("[data-gal-card]"));
+    const name = gal.querySelector<HTMLElement>("[data-gal-name]");
+    const line = gal.querySelector<HTMLElement>("[data-gal-line]");
+    const data = cards.map((c) => {
+      const a = c.querySelector("a");
+      return { name: a?.getAttribute("aria-label")?.split(" — ")[0] ?? "", line: a?.getAttribute("aria-label")?.split(" — ")[1] ?? "" };
+    });
+    const set = (i: number) => {
+      bgs.forEach((b, k) => b.classList.toggle("is-on", k === i));
+      cards.forEach((c, k) => c.classList.toggle("is-on", k === i));
+      gal.classList.toggle("is-lit", i >= 0);
+      if (name && line) {
+        name.textContent = i >= 0 ? data[i].name : "The Collection";
+        line.textContent = i >= 0 ? data[i].line : "Hover a system to explore it.";
+      }
+    };
+    cards.forEach((c, i) => {
+      c.addEventListener("pointerenter", () => set(i));
+      c.addEventListener("focusin", () => set(i));
+    });
+    gal.querySelector("[data-gal-strip]")?.addEventListener("pointerleave", () => set(-1));
+  }
+</script>

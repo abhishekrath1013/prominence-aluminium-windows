@@ -1,0 +1,26 @@
+---
+import StudioConcierge from "./StudioConcierge.astro";
+interface Props {
+  tone?: "default";
+}
+---
+
+<section id="studio" class="relative bg-ink py-28 md:py-40" data-reveal-group>
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(201,169,107,0.10),transparent_55%)]"></div>
+  <div class="container-frame relative">
+    <p class="label-eyebrow text-champagne" data-reveal="fade">The Experience Studio</p>
+    <h2 class="display-lg mt-8 max-w-5xl text-balance" data-split>
+      Some things cannot be seen on a screen. Come and stand at the glass.
+    </h2>
+    <p class="lead mt-10 max-w-2xl text-ivory/75" data-reveal="up">
+      Slide the panel. Feel the weight of the handle. Hold the finish against daylight. Tell us a little about your
+      home and we will prepare the studio for you — in person, without pressure.
+    </p>
+
+    <div class="hairline mt-16 origin-left" data-line-draw></div>
+
+    <div class="mt-16" data-reveal="up">
+      <StudioConcierge />
+    </div>
+  </div>
+</section>

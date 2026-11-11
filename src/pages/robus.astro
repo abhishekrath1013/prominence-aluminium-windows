@@ -1,33 +1,33 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/PageHero.astro";
-import { images } from "../assets/images";
 import ProductList from "../components/ProductList.astro";
-import ContactCTA from "../sections/ContactCTA.astro";
+import StudioInvite from "../components/StudioInvite.astro";
+import { images } from "../assets/images";
 import { products } from "../data/products";
 
 const robus = products.filter((p) => p.slug === "robus-30" || p.slug === "robus-40");
 ---
 
 <BaseLayout
-  title="Robus — Casement Window & Door Series"
+  title="Robus — Casement Windows & Doors"
   description="The Robus series: Robus 30 casement windows and Robus 40 casement windows, doors and fold & slide configurations."
   path="/robus/"
   ogImage="/media/casement-window.png"
 >
-  <PageHero eyebrow="Casement Series" image={images.lifestyleCasementGardenWarm} imageAlt="A visible-frame aluminium casement door system opening onto a landscaped garden dining area.">
+  <PageHero eyebrow="Casement Series" image={images.lifestyleCasementGardenWarm} imageAlt="A visible-frame aluminium casement door opening onto a landscaped garden dining area.">
     Robus
     <Fragment slot="description">
-      A solid, visible-frame casement platform in two depths — Robus 30 for slim residential sightlines, and
-      Robus 40 for windows, doors and fold &amp; slide configurations up to 2.4 metres.
+      A solid, visible-frame casement platform in two depths — Robus 30 for slim residential sightlines, and Robus 40
+      for windows, doors and fold &amp; slide configurations up to 2.4 metres.
     </Fragment>
   </PageHero>
 
-  <section class="bg-off-white py-16 md:py-24">
+  <section class="bg-ink py-28 md:py-44">
     <div class="container-frame">
       <ProductList products={robus} />
     </div>
   </section>
 
-  <ContactCTA />
+  <StudioInvite />
 </BaseLayout>

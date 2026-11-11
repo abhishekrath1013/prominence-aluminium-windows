@@ -1,9 +1,8 @@
 ---
 import { Image } from "astro:assets";
-import Frame from "./Frame.astro";
-import Eyebrow from "./Eyebrow.astro";
+import PageHero from "./PageHero.astro";
+import StudioInvite from "./StudioInvite.astro";
 import ArrowLink from "./ArrowLink.astro";
-import ContactForm from "./ContactForm.astro";
 import type { Product } from "../data/products";
 import { relatedProducts } from "../data/products";
 
@@ -21,95 +20,77 @@ const specGroups = [
 ];
 ---
 
-<section class="relative h-[85svh] min-h-[520px] w-full overflow-hidden bg-ink" data-reveal-group>
-  <Image
-    src={product.heroImage}
-    alt={`${product.fullTitle} — ${product.headline}`}
-    class="h-full w-full object-cover"
-    fetchpriority="high"
-    widths={[640, 1200, 1920]}
-    sizes="100vw"
-  />
-  <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-ink/50"></div>
-  <div class="pointer-events-none absolute inset-3 md:inset-6"><Frame tone="off-white" /></div>
+<PageHero
+  eyebrow={product.family === "sliding" ? "Sliding System" : "Casement System"}
+  image={product.heroImage}
+  imageAlt={`${product.fullTitle} — ${product.headline}`}
+>
+  {product.name}
+  <Fragment slot="description">{product.headline}</Fragment>
+</PageHero>
 
-  <div class="container-frame absolute inset-x-0 bottom-16 md:bottom-20">
-    <p class="label-eyebrow text-off-white/70" data-reveal="fade">{product.family === "sliding" ? "Sliding System" : "Casement System"}</p>
-    <h1 class="mt-5 font-display text-[clamp(3rem,9vw,6.5rem)] leading-[0.95] text-off-white" data-reveal="up">
-      {product.name}
-    </h1>
-    <p class="mt-6 max-w-lg text-base leading-relaxed text-off-white/75" data-reveal="up">{product.headline}</p>
-  </div>
-</section>
-
-<section class="bg-off-white py-14 md:py-20" data-reveal-group>
+<section class="bg-ink py-32 md:py-48">
   <div class="container-frame grid grid-cols-1 gap-12 md:grid-cols-12">
-    <div class="md:col-span-4">
-      <Eyebrow index="01" class="text-ink/65" data-reveal="fade">Description</Eyebrow>
-    </div>
-    <div class="md:col-span-8">
-      <p class="max-w-2xl font-display text-2xl leading-snug text-ink md:text-3xl" data-reveal="up">
-        {product.description}
-      </p>
-      <p class="mt-8 max-w-xl text-sm leading-relaxed text-ink/60" data-reveal="up">
-        <span class="label-eyebrow text-ink/60">Applications — </span>
-        {product.applications}
+    <p class="label-eyebrow text-champagne md:col-span-3" data-reveal="fade">The system</p>
+    <div class="md:col-span-9">
+      <p class="display-md max-w-4xl" data-scrub-text>{product.description}</p>
+      <p class="mt-14 max-w-xl text-base leading-relaxed text-ivory/60" data-reveal="up">
+        <span class="label-eyebrow mr-2 text-champagne">Made for</span>{product.applications}
       </p>
     </div>
   </div>
 </section>
 
-<section class="bg-off-white pb-14 md:pb-20" data-reveal-group>
-  <div class="container-frame uf-frame-host relative" data-reveal="up">
-    <div class="relative aspect-[16/9] w-full overflow-hidden">
+<section class="bg-ink pb-32 md:pb-48">
+  <div class="container-frame">
+    <div class="relative aspect-[16/9] overflow-hidden" data-img-reveal>
       <Image
         src={product.heroImage}
-        alt={`${product.fullTitle} detail view.`}
-        class="h-full w-full object-cover transition-precise duration-[1200ms] group-hover:scale-[1.02]"
+        alt={`${product.fullTitle} in situ.`}
+        class="h-[116%] w-full object-cover"
+        data-parallax="0.2"
         loading="lazy"
         widths={[640, 1200, 1920]}
         sizes="100vw"
       />
     </div>
-    <Frame hover />
   </div>
 </section>
 
-<section class="bg-ink py-20 text-off-white md:py-28" data-reveal-group>
-  <div class="container-frame">
-    <Eyebrow index="02" class="text-aluminium" data-reveal="fade">Key Specifications</Eyebrow>
-    <h2 class="mt-6 max-w-xl font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08]" data-reveal="up">
-      Engineered to the millimetre.
-    </h2>
+<section class="bg-ink-soft py-28 md:py-44">
+  <div class="container-frame" data-reveal-group>
+    <p class="label-eyebrow text-champagne" data-reveal="fade">Specifications</p>
+    <h2 class="display-lg mt-6" data-split>Engineered to the millimetre.</h2>
 
-    <div class="mt-14 grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-4">
+    <div class="mt-24 grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-2">
       {
         specGroups.map((group) => (
           <div data-reveal="up">
-            <p class="label-eyebrow text-aluminium">{group.title}</p>
-            <dl class="mt-6 flex flex-col gap-4">
+            <p class="font-display text-3xl font-light text-champagne-soft">{group.title}</p>
+            <dl class="mt-8">
               {group.rows.map((row) => (
-                <div class="border-t border-off-white/10 pt-3">
-                  <dt class="text-xs text-stone">{row.label}</dt>
-                  <dd class="mt-1 text-sm text-off-white">{row.value}</dd>
+                <div class="flex items-baseline justify-between gap-8 border-t border-ivory/12 py-4">
+                  <dt class="text-sm text-ivory/55">{row.label}</dt>
+                  <dd class="text-right text-sm text-ivory">{row.value}</dd>
                 </div>
               ))}
+              <div class="border-t border-ivory/12"></div>
             </dl>
           </div>
         ))
       }
     </div>
 
-    <div class="mt-16 grid grid-cols-1 gap-8 border-t border-off-white/10 pt-10 md:grid-cols-2" data-reveal="up">
-      <div>
-        <p class="label-eyebrow text-aluminium">Hardware</p>
-        <p class="mt-3 text-sm leading-relaxed text-stone">{product.hardware}</p>
+    <div class="mt-24 grid grid-cols-1 gap-12 border-t border-ivory/12 pt-12 md:grid-cols-2">
+      <div data-reveal="up">
+        <p class="label-eyebrow text-champagne">Hardware</p>
+        <p class="mt-4 text-base leading-relaxed text-ivory/70">{product.hardware}</p>
       </div>
-      <div>
-        <p class="label-eyebrow text-aluminium">Finishes</p>
-        <p class="mt-3 text-sm leading-relaxed text-stone">
-          Available across Prominance’s full finish range of 100+ anodised, powder-coated and metallic colours.
-          <a href="/products/#finishes" class="ml-1 underline decoration-off-white/30 underline-offset-4 hover:decoration-off-white">View finishes</a>.
+      <div data-reveal="up">
+        <p class="label-eyebrow text-champagne">Finishes</p>
+        <p class="mt-4 text-base leading-relaxed text-ivory/70">
+          Available across the full Prominance palette of 100+ anodised, powder-coated and metallic colours.
+          <a href="/products/#finishes" class="ml-1 underline decoration-champagne/50 underline-offset-4 hover:decoration-champagne">View finishes</a>
         </p>
       </div>
     </div>
@@ -118,46 +99,31 @@ const specGroups = [
 
 {
   related.length > 0 && (
-    <section class="bg-off-white py-14 md:py-20" data-reveal-group>
-      <div class="container-frame flex items-end justify-between">
-        <Eyebrow index="03" class="text-ink/65" data-reveal="fade">Related Systems</Eyebrow>
-      </div>
-      <div class="container-frame mt-12 grid grid-cols-1 gap-8 sm:grid-cols-3">
-        {related.map((p) => (
-          <a href={`/${p.slug}/`} class="uf-frame-host group relative block" data-reveal="up" data-cursor-hover>
-            <div class="relative aspect-[4/3] w-full overflow-hidden">
-              <Image
-                src={p.cardImage}
-                alt={p.fullTitle}
-                class="h-full w-full object-cover transition-precise duration-[1200ms] group-hover:scale-[1.02]"
-                loading="lazy"
-                widths={[300, 600, 900]}
-                sizes="(min-width: 640px) 33vw, 100vw"
-              />
-              <Frame hover />
-            </div>
-            <p class="mt-5 label-eyebrow text-ink/60">{p.category}</p>
-            <p class="mt-2 font-display text-2xl text-ink">{p.name}</p>
-          </a>
-        ))}
+    <section class="bg-ink py-28 md:py-44">
+      <div class="container-frame" data-reveal-group>
+        <p class="label-eyebrow text-champagne" data-reveal="fade">Continue exploring</p>
+        <div class="mt-14 grid grid-cols-1 gap-10 sm:grid-cols-3">
+          {related.map((p) => (
+            <a href={`/${p.slug}/`} class="group block" data-reveal="up">
+              <div class="relative aspect-[4/5] overflow-hidden bg-ink-raised">
+                <Image
+                  src={p.cardImage}
+                  alt={p.fullTitle}
+                  class="h-full w-full object-cover transition-transform duration-[1400ms] ease-[var(--ease-lux)] group-hover:scale-[1.06]"
+                  loading="lazy"
+                  widths={[300, 600, 900]}
+                  sizes="(min-width: 640px) 33vw, 100vw"
+                />
+              </div>
+              <p class="label-eyebrow mt-6 text-ivory/50">{p.category}</p>
+              <p class="mt-2 font-display text-4xl font-light transition-colors group-hover:text-champagne-soft">{p.name}</p>
+            </a>
+          ))}
+        </div>
+        <div class="mt-16" data-reveal="up"><ArrowLink href="/products/">The full collection</ArrowLink></div>
       </div>
     </section>
   )
 }
 
-<section class="bg-ink py-20 text-off-white md:py-28" data-reveal-group>
-  <div class="container-frame grid grid-cols-1 gap-16 md:grid-cols-12">
-    <div class="md:col-span-5">
-      <Eyebrow index="04" class="text-aluminium" data-reveal="fade">Specify {product.name}</Eyebrow>
-      <h2 class="mt-6 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] text-balance" data-reveal="up">
-        Talk to our team about this system.
-      </h2>
-      <div class="mt-8" data-reveal="up">
-        <ArrowLink href="/contact-us/" variant="light">Or visit our contact page</ArrowLink>
-      </div>
-    </div>
-    <div class="md:col-span-7" data-reveal="up">
-      <ContactForm tone="dark" />
-    </div>
-  </div>
-</section>
+<StudioInvite />

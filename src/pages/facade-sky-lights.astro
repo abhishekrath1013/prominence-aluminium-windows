@@ -2,10 +2,8 @@
 import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/PageHero.astro";
+import StudioInvite from "../components/StudioInvite.astro";
 import { images } from "../assets/images";
-import Eyebrow from "../components/Eyebrow.astro";
-import Frame from "../components/Frame.astro";
-import ContactCTA from "../sections/ContactCTA.astro";
 import { solutions } from "../data/solutions";
 ---
 
@@ -16,54 +14,47 @@ import { solutions } from "../data/solutions";
   ogImage="/media/full-view.png"
 >
   <PageHero eyebrow="Architectural Solutions" image={images.fullView} imageAlt="A two-storey modern villa with continuous glazed facades and a pool.">
-    Facade &amp; Sky Lights
+    Facade &amp; Beyond
     <Fragment slot="description">
-      Structural glazing systems for full elevations, roof lights and non-standard openings — engineered on
-      the same platform as every Prominance window and door.
+      Structural glazing for full elevations, roof lights and non-standard openings — engineered on the same platform
+      as every Prominance window and door.
     </Fragment>
   </PageHero>
 
   {
-    solutions.map((solution, i) => (
-      <section id={solution.slug} class:list={["py-16 md:py-24", i % 2 === 0 ? "bg-off-white" : "bg-ink text-off-white"]} data-reveal-group>
-        <div class="container-frame grid grid-cols-1 items-center gap-12 md:grid-cols-12 md:gap-16">
-          <div class:list={["md:col-span-6", i % 2 === 1 && "md:order-2"]}>
-            <Eyebrow index={String(i + 1).padStart(2, "0")} class={i % 2 === 0 ? "text-ink/65" : "text-aluminium"} data-reveal="fade">
-              Solution
-            </Eyebrow>
-            <h2 class:list={["mt-6 font-display text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.08] text-balance", i % 2 === 0 ? "text-ink" : "text-off-white"]} data-reveal="up">
-              {solution.name}
-            </h2>
-            <p class:list={["mt-4 label-eyebrow", i % 2 === 0 ? "text-ink/60" : "text-aluminium"]} data-reveal="fade">
-              {solution.headline}
-            </p>
-            <p class:list={["mt-6 max-w-md text-sm leading-relaxed", i % 2 === 0 ? "text-ink/60" : "text-stone"]} data-reveal="up">
-              {solution.description}
-            </p>
+    solutions.map((s, i) => (
+      <section id={s.slug} class:list={["py-28 md:py-44", i % 2 === 0 ? "bg-ink" : "bg-ink-soft"]}>
+        <div class="container-frame grid grid-cols-1 items-center gap-14 md:grid-cols-12 md:gap-20" data-reveal-group>
+          <div class:list={["md:col-span-5", i % 2 === 1 && "md:order-2"]}>
+            <p class="label-eyebrow text-champagne" data-reveal="fade">{String(i + 1).padStart(2, "0")}</p>
+            <h2 class="display-md mt-6 text-balance" data-split>{s.name}</h2>
+            <p class="lead mt-6 text-ivory/80" data-reveal="up">{s.headline}</p>
+            <p class="mt-6 max-w-md text-sm leading-relaxed text-ivory/60" data-reveal="up">{s.description}</p>
 
-            {solution.specs && (
-              <dl class="mt-8 grid grid-cols-2 gap-x-6 gap-y-4" data-reveal="up">
-                {solution.specs.map((spec) => (
-                  <div class:list={["border-t pt-3", i % 2 === 0 ? "border-ink/10" : "border-off-white/10"]}>
-                    <dt class:list={["text-xs", i % 2 === 0 ? "text-ink/60" : "text-stone"]}>{spec.label}</dt>
-                    <dd class:list={["mt-1 text-sm", i % 2 === 0 ? "text-ink" : "text-off-white"]}>{spec.value}</dd>
+            {s.specs && (
+              <dl class="mt-12">
+                {s.specs.map((spec) => (
+                  <div class="flex items-baseline justify-between gap-6 border-t border-ivory/12 py-3" data-reveal="up">
+                    <dt class="text-sm text-ivory/55">{spec.label}</dt>
+                    <dd class="text-right text-sm">{spec.value}</dd>
                   </div>
                 ))}
+                <div class="border-t border-ivory/12"></div>
               </dl>
             )}
           </div>
 
-          <div class:list={["uf-frame-host group relative md:col-span-6", i % 2 === 1 && "md:order-1"]} data-reveal="up">
-            <div class="relative aspect-[4/3] w-full overflow-hidden">
+          <div class:list={["md:col-span-7", i % 2 === 1 && "md:order-1"]}>
+            <div class="relative aspect-[4/3] overflow-hidden" data-img-reveal>
               <Image
-                src={solution.image}
-                alt={solution.headline}
-                class="h-full w-full object-cover transition-precise duration-[1200ms] group-hover:scale-[1.02]"
+                src={s.image}
+                alt={s.headline}
+                class="h-[116%] w-full object-cover"
+                data-parallax="0.2"
                 loading="lazy"
-                widths={[400, 800, 1200]}
-                sizes="(min-width: 768px) 50vw, 100vw"
+                widths={[500, 900, 1400]}
+                sizes="(min-width: 768px) 58vw, 100vw"
               />
-              <Frame hover tone={i % 2 === 0 ? "ink" : "off-white"} />
             </div>
           </div>
         </div>
@@ -71,5 +62,5 @@ import { solutions } from "../data/solutions";
     ))
   }
 
-  <ContactCTA />
+  <StudioInvite />
 </BaseLayout>

@@ -1,9 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/PageHero.astro";
-import { images } from "../assets/images";
-import Eyebrow from "../components/Eyebrow.astro";
 import ContactForm from "../components/ContactForm.astro";
+import { images } from "../assets/images";
 ---
 
 <BaseLayout
@@ -12,38 +11,31 @@ import ContactForm from "../components/ContactForm.astro";
   path="/architects/"
   ogImage="/media/hero-corner.jpg"
 >
-  <PageHero eyebrow="Trade — Architects" image={images.heroCorner} imageAlt="A minimal aluminium-framed glass corner opening a concrete villa onto a terrace.">
+  <PageHero eyebrow="For Architects" image={images.heroCorner} imageAlt="A minimal aluminium-framed glass corner opening a concrete villa onto a terrace.">
     Specification support, from first sketch.
     <Fragment slot="description">
-      Verified technical data for every Prominance system — frame geometry, glazing capacity and performance
-      ratings — ready for your drawings and specifications.
+      Verified technical data for every Prominance system — frame geometry, glazing capacity and performance ratings —
+      ready for your drawings and specifications.
     </Fragment>
   </PageHero>
 
-  <section class="bg-off-white py-16 md:py-24" data-reveal-group>
-    <div class="container-frame grid grid-cols-1 gap-12 md:grid-cols-12">
-      <div class="md:col-span-4">
-        <Eyebrow index="01" class="text-ink/65" data-reveal="fade">Why Specify Prominance</Eyebrow>
-      </div>
-      <div class="md:col-span-8">
-        <p class="max-w-2xl font-display text-2xl leading-snug text-ink md:text-3xl" data-reveal="up">
-          Every system is documented to the same standard as the frame itself — precise, verifiable and
-          ready to build on.
-        </p>
-      </div>
+  <section class="bg-ink py-32 md:py-48">
+    <div class="container-frame">
+      <p class="label-eyebrow text-champagne" data-reveal="fade">Why specify Prominance</p>
+      <p class="display-lg mt-10 max-w-5xl" data-scrub-text>
+        Every system is documented to the same standard as the frame itself — precise, verifiable and ready to build on.
+      </p>
     </div>
   </section>
 
-  <section class="bg-ink py-16 text-off-white md:py-24" data-reveal-group>
-    <div class="container-frame grid grid-cols-1 gap-16 md:grid-cols-12">
+  <section class="bg-ink-soft py-28 md:py-44">
+    <div class="container-frame grid grid-cols-1 gap-16 md:grid-cols-12" data-reveal-group>
       <div class="md:col-span-5">
-        <Eyebrow index="02" class="text-aluminium" data-reveal="fade">Get in Touch</Eyebrow>
-        <h2 class="mt-6 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] text-balance" data-reveal="up">
-          Request specifications for your project.
-        </h2>
+        <p class="label-eyebrow text-champagne" data-reveal="fade">Get in touch</p>
+        <h2 class="display-md mt-6 text-balance" data-split>Request specifications for your project.</h2>
       </div>
       <div class="md:col-span-7" data-reveal="up">
-        <ContactForm tone="dark" />
+        <ContactForm cta="Request specifications" messageLabel="Tell us about the project" />
       </div>
     </div>
   </section>

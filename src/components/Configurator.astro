@@ -1,0 +1,163 @@
+---
+import { finishes } from "../data/finishes";
+
+// A curated set from the real fan chart: matte solids, metallics and wood-grain.
+const pick = ["Noir", "Slate", "Urban Mist", "Frost", "Cedar", "Urban Dusk", "Caramel", "Duke", "Citrine", "Royal Chestnut"];
+const list = pick.map((n) => finishes.find((f) => f.name === n)!).filter(Boolean);
+const data = list.map(({ slug, name, tier, swatch }) => ({ slug, name, tier, swatch }));
+
+// The systems Uniframe lists: Graf sliding, Livio casement + bay, Robus 40 fold & slide,
+// Full View glazing and geometrical windows.
+const models = [
+  { key: "sliding", label: "Sliding", sub: "Graf" },
+  { key: "casement", label: "Casement", sub: "Livio" },
+  { key: "fold", label: "Fold & Slide", sub: "Robus 40" },
+  { key: "bay", label: "Bay", sub: "Livio" },
+  { key: "fixed", label: "Full View", sub: "Fixed" },
+  { key: "geo", label: "Geometrical", sub: "Hexagon" },
+];
+---
+
+<section class="relative flex min-h-[100svh] items-center bg-ink py-24 md:py-28" data-cfg data-finishes={JSON.stringify(data)}>
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_45%,rgba(201,169,107,0.10),transparent_60%)]"></div>
+
+  <div class="container-frame relative grid w-full grid-cols-1 items-center gap-8 md:grid-cols-12 md:gap-6">
+    <div class="md:col-span-4">
+      <p class="label-eyebrow text-champagne" data-reveal="fade">Design your window</p>
+      <h2 class="display-md mt-4 text-balance" data-reveal="up">See it by day. See it by night.</h2>
+
+      <div class="mt-8 space-y-7" data-reveal="up">
+        <div>
+          <p class="label-eyebrow mb-3 text-ivory/50">System · <span class="text-ivory" data-cfg-model-name>Graf · Sliding</span></p>
+          <div class="flex flex-wrap gap-2">
+            {
+              models.map((m, i) => (
+                <button type="button" data-cfg-model={m.key} aria-pressed={i === 0 ? "true" : "false"} class="cfg-pill">
+                  <span>{m.label}</span><em>{m.sub}</em>
+                </button>
+              ))
+            }
+          </div>
+        </div>
+
+        <div>
+          <p class="label-eyebrow mb-3 text-ivory/50">Finish · <span class="text-ivory" data-cfg-finish-name>Noir</span></p>
+          <div class="flex flex-wrap gap-2.5">
+            {
+              list.map((f, i) => (
+                <button type="button" data-cfg-finish={i} aria-pressed="false" aria-label={f.name} title={f.name} class="cfg-swatch" style={`--c:${f.swatch}`}></button>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="cfg-seg" role="group" aria-label="Time of day">
+            <button type="button" data-cfg-time="day" aria-pressed="true">Day</button>
+            <button type="button" data-cfg-time="night" aria-pressed="false">Night</button>
+          </div>
+          <button type="button" data-cfg-open class="cfg-pill"><span data-cfg-open-label>Open</span></button>
+        </div>
+      </div>
+
+      <p class="mt-8 max-w-xs text-xs leading-relaxed text-ivory/45" data-reveal="up">
+        Drag to turn the window. 6063 T-6 virgin aluminium, double glazing, EPDM gaskets — finished in any of 100+ colours.
+      </p>
+    </div>
+
+    <div class="relative md:col-span-8">
+      <div data-cfg-canvas class="h-[58svh] w-full md:h-[78svh]"></div>
+      <p class="cfg-loading pointer-events-none absolute inset-0 grid place-items-center label-eyebrow text-ivory/40">Loading 3D…</p>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .cfg-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid rgb(241 236 226 / 0.28);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ivory);
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  }
+  .cfg-pill em {
+    font-style: normal;
+    opacity: 0.5;
+    font-size: 0.68rem;
+  }
+  .cfg-pill:hover {
+    border-color: var(--color-champagne);
+  }
+  .cfg-pill[aria-pressed="true"] {
+    background: var(--color-champagne);
+    border-color: var(--color-champagne);
+    color: var(--color-ink);
+  }
+  .cfg-swatch {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: var(--c);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+    outline: 1px solid transparent;
+    outline-offset: 3px;
+    transition: outline-color 0.3s ease, transform 0.4s var(--ease-lux);
+  }
+  .cfg-swatch:hover {
+    transform: scale(1.1);
+  }
+  .cfg-swatch[aria-pressed="true"] {
+    outline-color: var(--color-champagne);
+  }
+  .cfg-seg {
+    display: inline-flex;
+    border: 1px solid rgb(241 236 226 / 0.28);
+  }
+  .cfg-seg button {
+    padding: 0.7rem 1.3rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ivory);
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+  .cfg-seg button[aria-pressed="true"] {
+    background: var(--color-ivory);
+    color: var(--color-ink);
+  }
+  [data-cfg][data-cfg-ready] .cfg-loading {
+    display: none;
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-cfg]");
+  if (root) {
+    let started = false;
+    const boot = async () => {
+      if (started) return;
+      started = true;
+      try {
+        const probe = document.createElement("canvas");
+        if (!(probe.getContext("webgl2") || probe.getContext("webgl"))) throw new Error("no webgl");
+        const { mountConfigurator } = await import("../animations/configurator");
+        mountConfigurator(root, JSON.parse(root.dataset.finishes ?? "[]"));
+        // layout changed (canvas inserted) — let ScrollTrigger re-measure
+        window.dispatchEvent(new Event("resize"));
+      } catch (e) {
+        const l = root.querySelector(".cfg-loading");
+        if (l) l.textContent = "3D preview needs WebGL — visit the studio to see it in person.";
+        console.warn(e);
+      }
+    };
+    new IntersectionObserver(
+      (es) => es.some((e) => e.isIntersecting) && boot(),
+      { rootMargin: "1200px 0px" }
+    ).observe(root);
+  }
+</script>

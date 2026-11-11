@@ -1,36 +1,33 @@
 ---
 import type { ImageMetadata } from "astro";
 import { Image } from "astro:assets";
-import Frame from "./Frame.astro";
 
 interface Props {
   eyebrow: string;
   image: ImageMetadata;
   imageAlt: string;
-  height?: "full" | "tall";
 }
-const { eyebrow, image, imageAlt, height = "tall" } = Astro.props;
-const heightClass = height === "full" ? "h-[100svh] min-h-[640px]" : "h-[75svh] min-h-[460px]";
+const { eyebrow, image, imageAlt } = Astro.props;
 ---
 
-<section class:list={["relative w-full overflow-hidden bg-ink", heightClass]} data-reveal-group>
-  <Image
-    src={image}
-    alt={imageAlt}
-    class="h-full w-full object-cover"
-    fetchpriority="high"
-    widths={[640, 1200, 1920]}
-    sizes="100vw"
-  />
-  <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/15 to-ink/65"></div>
-  <div class="pointer-events-none absolute inset-3 md:inset-6"><Frame tone="off-white" /></div>
+<section class="relative h-[92svh] min-h-[560px] w-full overflow-hidden bg-ink">
+  <div class="absolute inset-0 overflow-hidden">
+    <Image
+      src={image}
+      alt={imageAlt}
+      class="h-[118%] w-full object-cover"
+      data-parallax="0.18"
+      fetchpriority="high"
+      widths={[640, 1200, 1920]}
+      sizes="100vw"
+    />
+  </div>
+  <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/25 to-ink/60"></div>
 
-  <div class="container-frame absolute inset-x-0 bottom-14 md:bottom-16">
-    <p class="label-eyebrow text-off-white/70" data-reveal="fade">{eyebrow}</p>
-    <h1 class="mt-5 font-display text-[clamp(2.75rem,7.5vw,5.5rem)] leading-[0.98] text-off-white text-balance" data-reveal="up">
-      <slot />
-    </h1>
-    <div class="mt-6 max-w-lg text-base leading-relaxed text-off-white/75" data-reveal="up">
+  <div class="container-frame absolute inset-x-0 bottom-0 pb-16 md:pb-24" data-reveal-group>
+    <p class="label-eyebrow text-champagne" data-reveal="fade">{eyebrow}</p>
+    <h1 class="display-lg mt-6 max-w-5xl text-balance" data-split data-split-delay="0.15"><slot /></h1>
+    <div class="mt-8 max-w-xl text-base leading-relaxed text-ivory/75" data-reveal="up">
       <slot name="description" />
     </div>
   </div>

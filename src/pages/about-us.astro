@@ -2,114 +2,118 @@
 import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/PageHero.astro";
+import StudioInvite from "../components/StudioInvite.astro";
 import { images } from "../assets/images";
-import Eyebrow from "../components/Eyebrow.astro";
-import Frame from "../components/Frame.astro";
-import { company, sisterBrands } from "../data/company";
-import ContactCTA from "../sections/ContactCTA.astro";
+import { company, sisterBrands, engineeringStats } from "../data/company";
+
+const values = [
+  { title: "Sustainability", body: "Naturally corrosion-resistant, 100% recyclable virgin aluminium." },
+  { title: "Quality & Reliability", body: "Rigorously tested hardware, gaskets and finishes, backed by warranty." },
+  { title: "Performance & Security", body: "Vault-like durability engineered into every locking system." },
+  { title: "Customisation", body: "The freedom to specify a finish, configuration and scale for every space." },
+];
 ---
 
 <BaseLayout
-  title="About Prominance"
+  title="Our House — About Prominance"
   description="PROMINANCE is a precision-engineered aluminium window and door systems brand, manufactured by PWDS Extrusions Private Limited in Coimbatore, India."
   path="/about-us/"
   ogImage="/media/villa.jpeg"
 >
-  <PageHero eyebrow="About Prominance" image={images.villa} imageAlt="A minimalist villa terrace at dusk, framed by slim aluminium glazing over a tropical landscape.">
+  <PageHero eyebrow="Our House" image={images.villa} imageAlt="A minimalist villa terrace framed by slim aluminium glazing over a tropical landscape.">
     Precision, by design.
     <Fragment slot="description">
-      PROMINANCE engineers aluminium window, door and facade systems that combine durability, strength and a
-      slim, minimal sightline — built to maximise the connection between architecture and the outside world.
+      Prominance engineers aluminium window, door and facade systems that combine durability, strength and a slim,
+      minimal sightline — to deepen the connection between a home and the world outside it.
     </Fragment>
   </PageHero>
 
-  <section class="bg-off-white py-16 md:py-24" data-reveal-group>
-    <div class="container-frame grid grid-cols-1 gap-12 md:grid-cols-12">
-      <div class="md:col-span-4">
-        <Eyebrow index="01" class="text-ink/65" data-reveal="fade">Mission</Eyebrow>
-      </div>
-      <div class="md:col-span-8">
-        <p class="max-w-2xl font-display text-2xl leading-snug text-ink md:text-3xl" data-reveal="up">
-          To craft precision-engineered aluminium window systems, customisable and vault-like in quality, backed
-          by service that makes Prominance a trusted partner in framing every space.
-        </p>
-      </div>
-    </div>
-
-    <div class="container-frame mt-20 grid grid-cols-1 gap-12 md:grid-cols-12">
-      <div class="md:col-span-4">
-        <Eyebrow index="02" class="text-ink/65" data-reveal="fade">Vision</Eyebrow>
-      </div>
-      <div class="md:col-span-8">
-        <p class="max-w-2xl text-base leading-relaxed text-ink/70" data-reveal="up">
-          To become the global standard for premium aluminium window systems — recognised for quality,
-          aesthetics and sustainable innovation, and trusted by architects and homeowners to beautifully frame
-          every space.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="bg-ink py-16 text-off-white md:py-24" data-reveal-group>
+  <section class="bg-ink py-32 md:py-52">
     <div class="container-frame">
-      <Eyebrow index="03" class="text-aluminium" data-reveal="fade">What We Stand For</Eyebrow>
-      <div class="mt-12 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-4">
-        {[
-          { title: "Sustainability", body: "Naturally corrosion-resistant, 100% recyclable virgin aluminium." },
-          { title: "Quality & Reliability", body: "Rigorously tested hardware, gaskets and finishes, backed by warranty." },
-          { title: "Performance & Security", body: "Vault-like durability engineered into every locking system." },
-          { title: "Customisation", body: "The freedom to specify a finish, configuration and scale for every space." },
-        ].map((v) => (
-          <div data-reveal="up" class="border-t border-off-white/15 pt-6">
-            <p class="font-display text-xl">{v.title}</p>
-            <p class="mt-3 text-sm leading-relaxed text-stone">{v.body}</p>
-          </div>
-        ))}
+      <p class="label-eyebrow text-champagne" data-reveal="fade">Our mission</p>
+      <p class="display-lg mt-10 max-w-6xl" data-scrub-text>
+        To craft precision-engineered aluminium window systems, customisable and vault-like in quality, backed by
+        service that makes Prominance a trusted partner in framing every space.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-ink-soft py-28 md:py-44">
+    <div class="container-frame grid grid-cols-1 gap-12 md:grid-cols-12" data-reveal-group>
+      <p class="label-eyebrow text-champagne md:col-span-3" data-reveal="fade">Our vision</p>
+      <p class="lead max-w-3xl text-ivory/85 md:col-span-9" data-reveal="up">
+        To become the global standard for premium aluminium window systems — recognised for quality, aesthetics and
+        sustainable innovation, and trusted by architects and homeowners to beautifully frame every space.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-ink py-28 md:py-44">
+    <div class="container-frame" data-reveal-group>
+      <p class="label-eyebrow text-champagne" data-reveal="fade">What we stand for</p>
+      <div class="mt-16 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          values.map((v, i) => (
+            <div class="border-t border-ivory/15 pt-6" data-reveal="up">
+              <p class="label-eyebrow text-champagne/80">{String(i + 1).padStart(2, "0")}</p>
+              <p class="mt-6 font-display text-3xl font-light">{v.title}</p>
+              <p class="mt-4 text-sm leading-relaxed text-ivory/60">{v.body}</p>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
 
-  <section class="bg-off-white pb-16 md:pb-24" data-reveal-group>
-    <div class="container-frame grid grid-cols-1 items-center gap-12 md:grid-cols-12 md:gap-16">
-      <div class="uf-frame-host relative md:col-span-6" data-reveal="up">
-        <div class="relative aspect-[4/3] w-full overflow-hidden">
-          <Image
-            src={images.fullView}
-            alt="A two-storey modern villa with a pool, manufactured facility context."
-            class="h-full w-full object-cover"
-            loading="lazy"
-            widths={[400, 800, 1200]}
-            sizes="(min-width: 768px) 50vw, 100vw"
-          />
+  <section class="bg-ivory py-28 text-ink md:py-44">
+    <div class="container-frame" data-reveal-group>
+      <p class="label-eyebrow text-[#8a6d33]" data-reveal="fade">By the numbers</p>
+      <div class="mt-16 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-5">
+        {
+          engineeringStats.map((s) => (
+            <div class="border-t border-ink/20 pt-6" data-reveal="up">
+              <p class="font-display text-5xl font-light leading-none">{s.value}</p>
+              {s.unit && <p class="label-eyebrow mt-3 text-ink/55">{s.unit}</p>}
+              <p class="mt-5 text-sm text-ink">{s.label}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-ink py-28 md:py-44">
+    <div class="container-frame grid grid-cols-1 items-center gap-14 md:grid-cols-12 md:gap-20" data-reveal-group>
+      <div class="md:col-span-7">
+        <div class="relative aspect-[4/3] overflow-hidden" data-img-reveal>
+          <Image src={images.fullView} alt="A two-storey modern villa with continuous glazing and a pool." class="h-[116%] w-full object-cover" data-parallax="0.2" loading="lazy" widths={[500, 900, 1400]} sizes="58vw" />
         </div>
-        <Frame hover />
       </div>
-      <div class="md:col-span-6">
-        <Eyebrow index="04" class="text-ink/65" data-reveal="fade">Manufacturing</Eyebrow>
-        <h2 class="mt-6 font-display text-[clamp(1.75rem,3.5vw,2.5rem)] leading-[1.1] text-ink text-balance" data-reveal="up">
-          Manufactured by {company.legalName}.
-        </h2>
-        <p class="mt-6 max-w-md text-sm leading-relaxed text-ink/60" data-reveal="up">
-          Every Prominance system is manufactured at our facility in Coimbatore, Tamil Nadu — {company.addressLine1}
-          {" "}{company.addressLine2}.
+      <div class="md:col-span-5">
+        <p class="label-eyebrow text-champagne" data-reveal="fade">Crafted in Coimbatore</p>
+        <h2 class="display-md mt-6" data-split>Manufactured by {company.legalName}.</h2>
+        <p class="mt-8 max-w-md text-sm leading-relaxed text-ivory/60" data-reveal="up">
+          Every Prominance system is made at our facility in Coimbatore, Tamil Nadu — {company.addressLine1} {company.addressLine2}.
         </p>
       </div>
     </div>
   </section>
 
-  <section class="bg-ink py-20 text-off-white md:py-28" data-reveal-group>
-    <div class="container-frame">
-      <Eyebrow index="05" class="text-aluminium" data-reveal="fade">Our Creative Brands</Eyebrow>
-      <div class="mt-10 flex flex-wrap gap-x-14 gap-y-6" data-reveal="up">
-        {sisterBrands.map((b) => (
-          <a href={b.href} target="_blank" rel="noopener noreferrer" class="group">
-            <p class="font-display text-2xl transition-precise group-hover:opacity-60">{b.name}</p>
-            <p class="mt-1 text-sm text-stone">{b.line}</p>
-          </a>
-        ))}
+  <section class="bg-ink-soft py-28 md:py-40">
+    <div class="container-frame" data-reveal-group>
+      <p class="label-eyebrow text-champagne" data-reveal="fade">Our creative brands</p>
+      <div class="mt-14 grid grid-cols-1 gap-10 md:grid-cols-3">
+        {
+          sisterBrands.map((b) => (
+            <a href={b.href} target="_blank" rel="noopener noreferrer" class="group border-t border-ivory/15 pt-6" data-reveal="up">
+              <p class="font-display text-4xl font-light transition-colors group-hover:text-champagne-soft">{b.name}</p>
+              <p class="mt-3 text-sm text-ivory/55">{b.line}</p>
+            </a>
+          ))
+        }
       </div>
     </div>
   </section>
 
-  <ContactCTA />
+  <StudioInvite />
 </BaseLayout>

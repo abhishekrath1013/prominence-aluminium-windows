@@ -1,86 +1,80 @@
 ---
 import { Image } from "astro:assets";
-import { footerLinks } from "../data/nav";
-import { company, sisterBrands } from "../data/company";
 import { images } from "../assets/images";
+import { company, sisterBrands } from "../data/company";
+import { footerLinks } from "../data/nav";
 const year = new Date().getFullYear();
 ---
 
-<footer class="bg-ink text-off-white">
-  <div class="container-frame py-20 md:py-28">
-    <div class="grid grid-cols-1 gap-16 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-      <div>
-        <a href="/" class="inline-block">
-          <Image
-            src={images.prominanceLogo}
-            alt="PROMINANCE Window Systems"
-            width={1060}
-            height={198}
-            class="h-8 w-auto brightness-0 invert"
-            widths={[260, 520]}
-            sizes="200px"
-          />
-        </a>
-        <p class="mt-6 max-w-xs text-sm leading-relaxed text-stone">
-          Precision-engineered aluminium window and door systems, manufactured by {company.legalName}.
-        </p>
-        <div class="mt-8 flex gap-5 label-eyebrow text-stone">
-          <a href={company.social.instagram} target="_blank" rel="noopener noreferrer" class="hover:text-off-white transition-precise">Instagram</a>
-          <a href={company.social.linkedin} target="_blank" rel="noopener noreferrer" class="hover:text-off-white transition-precise">LinkedIn</a>
-          <a href={company.social.youtube} target="_blank" rel="noopener noreferrer" class="hover:text-off-white transition-precise">YouTube</a>
-          <a href={company.social.facebook} target="_blank" rel="noopener noreferrer" class="hover:text-off-white transition-precise">Facebook</a>
+<footer class="relative overflow-hidden bg-ink-soft text-ivory">
+  <div class="container-frame pb-10 pt-24 md:pt-36">
+    <div class="grid grid-cols-1 gap-16 md:grid-cols-12">
+      <div class="md:col-span-5">
+        <p class="label-eyebrow text-champagne" data-reveal="fade">Prominance Your View</p>
+        <p class="display-md mt-6 max-w-md" data-reveal="up">Come and stand at the glass.</p>
+        <div class="mt-10" data-reveal="up">
+          <a href="/contact-us/" class="btn-lux label-eyebrow">Visit the Experience Studio</a>
         </div>
       </div>
 
-      <div>
-        <p class="label-eyebrow text-aluminium">Products</p>
-        <ul class="mt-5 space-y-3">
-          {footerLinks.products.map((l) => (
-            <li><a href={l.href} class="text-sm text-stone hover:text-off-white transition-precise">{l.name}</a></li>
-          ))}
-        </ul>
-      </div>
-
-      <div>
-        <p class="label-eyebrow text-aluminium">Company</p>
-        <ul class="mt-5 space-y-3">
-          {footerLinks.company.map((l) => (
-            <li><a href={l.href} class="text-sm text-stone hover:text-off-white transition-precise">{l.name}</a></li>
-          ))}
-        </ul>
-      </div>
-
-      <div>
-        <p class="label-eyebrow text-aluminium">Get in touch</p>
-        <ul class="mt-5 space-y-3 text-sm text-stone">
-          <li><a href={company.phoneHref} class="hover:text-off-white transition-precise">{company.phoneDisplay}</a></li>
-          <li><a href={`mailto:${company.email}`} class="hover:text-off-white transition-precise">{company.email}</a></li>
-          <li class="pt-2 leading-relaxed">
-            {company.addressLine1}<br />
-            {company.addressLine2}
-          </li>
-        </ul>
+      <div class="grid grid-cols-2 gap-10 md:col-span-7 md:grid-cols-3">
+        <div>
+          <p class="label-eyebrow text-champagne">Collection</p>
+          <ul class="mt-6 space-y-3 text-sm text-ivory/65">
+            {footerLinks.products.map((l) => <li><a href={l.href} class="transition-colors hover:text-ivory">{l.name}</a></li>)}
+          </ul>
+        </div>
+        <div>
+          <p class="label-eyebrow text-champagne">House</p>
+          <ul class="mt-6 space-y-3 text-sm text-ivory/65">
+            {footerLinks.company.map((l) => <li><a href={l.href} class="transition-colors hover:text-ivory">{l.name}</a></li>)}
+            <li><a href="/brochure/prominance-brochure.pdf" target="_blank" rel="noopener" class="transition-colors hover:text-ivory">Brochure (PDF)</a></li>
+          </ul>
+        </div>
+        <div class="col-span-2 md:col-span-1">
+          <p class="label-eyebrow text-champagne">Private enquiries</p>
+          <ul class="mt-6 space-y-3 text-sm text-ivory/65">
+            <li><a href={company.phoneHref} class="transition-colors hover:text-ivory">{company.phoneDisplay}</a></li>
+            <li><a href={`mailto:${company.email}`} class="transition-colors hover:text-ivory">{company.email}</a></li>
+            <li class="leading-relaxed">{company.addressLine1}<br />{company.addressLine2}</li>
+          </ul>
+        </div>
       </div>
     </div>
 
-    <div class="rule-thin mt-16 mb-8"></div>
+    <div class="hairline mt-24"></div>
 
-    <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-      <p class="label-eyebrow text-aluminium">Our creative brands</p>
-      <div class="flex flex-wrap gap-x-8 gap-y-2">
-        {sisterBrands.map((b) => (
-          <a href={b.href} target="_blank" rel="noopener noreferrer" class="text-sm text-stone hover:text-off-white transition-precise">
-            {b.name}
-          </a>
+    <div class="mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <a href="/" aria-label="Prominance — home">
+        <Image
+          src={images.prominanceLogo}
+          alt="PROMINANCE"
+          width={1060}
+          height={198}
+          class="h-8 w-auto brightness-0 invert"
+          widths={[260, 520]}
+          sizes="220px"
+          loading="lazy"
+        />
+      </a>
+      <div class="flex flex-wrap gap-x-8 gap-y-3 label-eyebrow text-ivory/55">
+        <a href={company.social.instagram} target="_blank" rel="noopener noreferrer" class="hover:text-champagne">Instagram</a>
+        <a href={company.social.linkedin} target="_blank" rel="noopener noreferrer" class="hover:text-champagne">LinkedIn</a>
+        <a href={company.social.youtube} target="_blank" rel="noopener noreferrer" class="hover:text-champagne">YouTube</a>
+        <a href={company.social.facebook} target="_blank" rel="noopener noreferrer" class="hover:text-champagne">Facebook</a>
+      </div>
+    </div>
+
+    <div class="mt-10 flex flex-col gap-4 text-xs text-ivory/40 md:flex-row md:justify-between">
+      <p>© {year} {company.legalName}. A Uniframe house.</p>
+      <p>
+        Sister brands:
+        {sisterBrands.map((b, i) => (
+          <>
+            <a href={b.href} target="_blank" rel="noopener noreferrer" class="hover:text-ivory">{b.name}</a>{i < sisterBrands.length - 1 ? " · " : ""}
+          </>
         ))}
-      </div>
-    </div>
-
-    <div class="rule-thin mt-8 mb-6"></div>
-
-    <div class="flex flex-col gap-2 text-xs text-aluminium md:flex-row md:items-center md:justify-between">
-      <p>&copy; {year} {company.legalName}. All rights reserved.</p>
-      <p>Prominance Your View.</p>
+      </p>
     </div>
   </div>
 </footer>

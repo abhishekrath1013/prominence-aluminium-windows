@@ -1,63 +1,44 @@
 ---
 import { Image } from "astro:assets";
-import Frame from "./Frame.astro";
 import type { Product } from "../data/products";
 
 interface Props {
   products: Product[];
-  tone?: "light" | "dark";
 }
-const { products: items, tone = "light" } = Astro.props;
-const isDark = tone === "dark";
-const titleColor = isDark ? "text-off-white" : "text-ink";
-const eyebrowColor = isDark ? "text-aluminium" : "text-ink/60";
-const bodyColor = isDark ? "text-stone" : "text-ink/60";
-const frameTone = isDark ? "off-white" : "ink";
+const { products: items } = Astro.props;
 ---
 
-<div class="flex flex-col gap-24 md:gap-32" data-reveal-group>
+<div class="flex flex-col gap-28 md:gap-44">
   {
     items.map((product, i) => (
-      <a
-        href={`/${product.slug}/`}
-        class="uf-frame-host group relative grid grid-cols-1 items-center gap-8 md:grid-cols-12 md:gap-12"
-        data-reveal="up"
-        data-cursor-hover
-      >
-        <div class={`relative md:col-span-7 ${i % 2 === 1 ? "md:order-2" : ""}`}>
-          <div class="relative aspect-[4/3] w-full overflow-hidden">
+      <a href={`/${product.slug}/`} class="group grid grid-cols-1 items-center gap-10 md:grid-cols-12 md:gap-16" data-reveal-group>
+        <div class={`md:col-span-7 ${i % 2 === 1 ? "md:order-2" : ""}`}>
+          <div class="relative aspect-[4/3] w-full overflow-hidden" data-img-reveal>
             <Image
               src={product.cardImage}
               alt={`${product.fullTitle} — ${product.headline}`}
-              class="h-full w-full object-cover transition-precise duration-[1200ms] group-hover:scale-[1.02]"
+              class="h-[114%] w-full object-cover transition-transform duration-[1600ms] ease-[var(--ease-lux)] group-hover:scale-[1.04]"
+              data-parallax="0.16"
               loading="lazy"
-              widths={[400, 800, 1200]}
+              widths={[500, 900, 1400]}
               sizes="(min-width: 768px) 58vw, 100vw"
             />
-            <Frame hover tone={frameTone} />
           </div>
         </div>
 
         <div class={`md:col-span-5 ${i % 2 === 1 ? "md:order-1" : ""}`}>
-          <p class:list={["label-eyebrow", eyebrowColor]}>{product.category}</p>
-          <h3 class:list={["uf-product-title mt-4 font-display text-[clamp(2.25rem,4.5vw,3.75rem)] leading-none transition-precise", titleColor]}>
-            {product.name}
-          </h3>
-          <p class:list={["mt-5 max-w-sm text-sm leading-relaxed", bodyColor]}>{product.headline}</p>
-          <div class:list={["mt-8 inline-flex items-center gap-3", titleColor]}>
-            <span class="label-eyebrow">Explore Product</span>
-            <svg width="18" height="10" viewBox="0 0 18 10" fill="none" class="transition-precise group-hover:translate-x-1">
-              <path d="M0 5H17M17 5L13 1M17 5L13 9" stroke="currentColor" stroke-width="1"></path>
+          <p class="label-eyebrow text-champagne" data-reveal="fade">{product.category}</p>
+          <h3 class="display-lg mt-5 transition-colors duration-500 group-hover:text-champagne-soft" data-split>{product.name}</h3>
+          <p class="lead mt-6 max-w-sm text-ivory/75" data-reveal="up">{product.headline}</p>
+          <p class="mt-6 max-w-sm text-sm leading-relaxed text-ivory/55" data-reveal="up">{product.applications}</p>
+          <span class="link-underline label-eyebrow mt-10" data-reveal="up">
+            Discover
+            <svg width="18" height="10" viewBox="0 0 18 10" fill="none" class="transition-transform duration-500 group-hover:translate-x-1">
+              <path d="M0 5H17M17 5L13 1M17 5L13 9" stroke="currentColor" stroke-width="1" />
             </svg>
-          </div>
+          </span>
         </div>
       </a>
     ))
   }
 </div>
-
-<style>
-  .group:hover .uf-product-title {
-    transform: translateX(6px);
-  }
-</style>
