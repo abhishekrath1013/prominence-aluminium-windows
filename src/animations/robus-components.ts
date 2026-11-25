@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { gsap } from "gsap";
-import { studioEnv } from "./configurator";
+import { studioEnv } from "./studio-env";
 import type { RobusComponent } from "../data/robus-components";
 
 /* ==========================================================================

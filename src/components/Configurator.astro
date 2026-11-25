@@ -1,5 +1,20 @@
 ---
 import { finishes } from "../data/finishes";
+import "./window-scene.css";
+// The view outside: Seattle from Kerry Park, 3840 × 2400, aligned on the same landmarks and saved lossless.
+// Sources and licences: ../assets/media/window-view/CREDITS.md
+// Imported with ?url so the files are served exactly as they are, with no resizing or re-compression.
+import viewDay from "../assets/media/window-view/day.webp?url";
+import viewMidday from "../assets/media/window-view/midday.webp?url";
+import viewEvening from "../assets/media/window-view/evening.webp?url";
+import viewNight from "../assets/media/window-view/night.webp?url";
+
+const times = [
+  { key: "day", label: "Day", src: viewDay },
+  { key: "midday", label: "Midday", src: viewMidday },
+  { key: "evening", label: "Evening", src: viewEvening },
+  { key: "night", label: "Night", src: viewNight },
+];
 
 // A curated set from the real fan chart: matte solids, metallics and wood-grain.
 const pick = ["Noir", "Slate", "Urban Mist", "Frost", "Cedar", "Urban Dusk", "Caramel", "Duke", "Citrine", "Royal Chestnut"];
@@ -30,7 +45,7 @@ const models = [
         No two homes are the same. Mix and match styles, sizes, and finishes to create windows and doors that are a perfect fit for your space.
       </p>
 
-      <div class="mt-8 space-y-7" data-reveal="up">
+      <div class="mt-7 space-y-5" data-reveal="up">
         <div>
           <p class="label-eyebrow mb-3 text-ivory/50">System · <span class="text-ivory" data-cfg-model-name>Graf · Sliding</span></p>
           <div class="flex flex-wrap gap-2">
@@ -55,17 +70,18 @@ const models = [
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
+        <div>
+          <p class="label-eyebrow mb-3 text-ivory/50">View · <span class="text-ivory" data-cfg-time-name>Day</span></p>
           <div class="cfg-seg" role="group" aria-label="Time of day">
-            <button type="button" data-cfg-time="day" aria-pressed="true">Day</button>
-            <button type="button" data-cfg-time="night" aria-pressed="false">Night</button>
+            {times.map((t, i) => <button type="button" data-cfg-time={t.key} aria-pressed={i === 0 ? "true" : "false"}>{t.label}</button>)}
           </div>
-          <button type="button" data-cfg-open class="cfg-pill"><span data-cfg-open-label>Open</span></button>
         </div>
+
+        <button type="button" data-cfg-open aria-pressed="false" class="cfg-pill"><span data-cfg-open-label>Open window</span></button>
       </div>
 
-      <p class="mt-8 max-w-xs text-xs leading-relaxed text-ivory/45" data-reveal="up">
-        Drag to turn the window. 6063 T-6 virgin aluminium, double glazing, EPDM gaskets — finished in any of 100+ colours.
+      <p class="mt-5 max-w-xs text-xs leading-relaxed text-ivory/45">
+        Flick the switch on the wall to turn the lights on. 6063 T-6 virgin aluminium, double glazing, EPDM gaskets — finished in any of 100+ colours.
       </p>
     </div>
 
@@ -74,8 +90,21 @@ const models = [
   <!-- the wrapper does the positioning/centring; the stage inside is animated, so it must carry no CSS translate of its own -->
   <div class="cf__stagewrap">
     <div class="cf__stage">
-      <div data-cfg-canvas class="h-full w-full"></div>
-      <p class="cfg-loading pointer-events-none absolute inset-0 grid place-items-center label-eyebrow text-ivory/40">Loading 3D…</p>
+      <div class="wn" data-wn data-time="day" data-light="off">
+        <div class="wn__scene">
+          <div class="wn__plaster" aria-hidden="true"></div>
+          <div class="wn__lamps" aria-hidden="true"></div>
+          <div class="wn__view" data-wn-view aria-hidden="true">
+            {/* full-resolution files: only the first loads with the page, the rest when asked for */}
+            {times.map((t, i) => <img src={i === 0 ? t.src : undefined} data-src={t.src} data-wn-img={t.key} alt="" width="3840" height="2400" loading="lazy" decoding="async" />)}
+          </div>
+          <div class="wn__windows" data-wn-windows aria-hidden="true"></div>
+          <button type="button" class="wn-switch" data-wn-switch role="switch" aria-checked="false" aria-label="Room lights" title="Room lights">
+            <span class="wn-switch__rocker"></span>
+            <span class="wn-switch__led"></span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
   </div>
@@ -131,7 +160,7 @@ const models = [
     padding-left: calc(21px / 1.115);
     padding-right: calc(20px / 1.115);
   }
-  /* the 3D window: as large as the space right of the panel allows (up to 940u wide, 720u tall), centred in it */
+  /* the window wall: as large as the space right of the panel allows (up to 940u wide), centred in it */
   .cf__stagewrap {
     position: absolute;
     left: calc(574 * var(--u));
@@ -144,8 +173,6 @@ const models = [
   .cf__stage {
     position: relative;
     width: min(940 * var(--u), 100%);
-    aspect-ratio: 1.3;
-    max-height: calc(720 * var(--u));
   }
   @media (max-width: 860px) {
     .cf {
@@ -176,19 +203,18 @@ const models = [
       margin-inline: 0;
       width: auto;
       height: auto;
-      max-height: none;
-      aspect-ratio: auto;
     }
     .cf__stagewrap {
       display: block;
+    }
+    /* the wall has no intrinsic width (it is a size container), so state it */
+    .cf__stage {
+      width: 100%;
     }
     .cf__panel-in {
       zoom: 1;
       width: auto;
       padding: 0;
-    }
-    .cf__stage {
-      height: 58svh;
     }
   }
 
@@ -238,7 +264,7 @@ const models = [
     border: 1px solid rgb(241 236 226 / 0.28);
   }
   .cfg-seg button {
-    padding: 0.7rem 1.3rem;
+    padding: 0.7rem 0.85rem;
     font-size: 0.78rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -249,36 +275,16 @@ const models = [
     background: var(--color-ivory);
     color: var(--color-ink);
   }
-  [data-cfg][data-cfg-ready] .cfg-loading {
-    display: none;
+  .cfg-pill:disabled {
+    opacity: 0.35;
+    pointer-events: none;
   }
 </style>
 
 <script>
+  import { mountConfigurator } from "../animations/configurator";
   const root = document.querySelector<HTMLElement>("[data-cfg]");
-  if (root) {
-    let started = false;
-    const boot = async () => {
-      if (started) return;
-      started = true;
-      try {
-        const probe = document.createElement("canvas");
-        if (!(probe.getContext("webgl2") || probe.getContext("webgl"))) throw new Error("no webgl");
-        const { mountConfigurator } = await import("../animations/configurator");
-        mountConfigurator(root, JSON.parse(root.dataset.finishes ?? "[]"));
-        // layout changed (canvas inserted) — let ScrollTrigger re-measure
-        window.dispatchEvent(new Event("resize"));
-      } catch (e) {
-        const l = root.querySelector(".cfg-loading");
-        if (l) l.textContent = "3D preview needs WebGL — visit the studio to see it in person.";
-        console.warn(e);
-      }
-    };
-    new IntersectionObserver(
-      (es) => es.some((e) => e.isIntersecting) && boot(),
-      { rootMargin: "1200px 0px" }
-    ).observe(root);
-  }
+  if (root) mountConfigurator(root, JSON.parse(root.dataset.finishes ?? "[]"));
 </script>
 
 <script>
