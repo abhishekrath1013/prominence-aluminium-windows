@@ -55,7 +55,20 @@ const behind = await sharp({ create: { width, height, channels: 4, background: {
   .composite([{ input: pane, left: left - M, top: top - M }])
   .png()
   .toBuffer();
-await sharp(behind).composite([{ input: path.join(src, "window.png") }]).webp(WEBP).toFile(path.join(out, "window.webp"));
+// With nothing opaque behind it, the render's own grain in the glass costs megabytes to store, so smooth it out.
+// Only well inside the glass: the sash and the reveal stay as rendered.
+const INSET = 40;
+const inner = { left: left + INSET, top: top + INSET, width: gw - 2 * INSET, height: gh - 2 * INSET };
+const calm = await sharp(path.join(src, "window.png")).ensureAlpha().extract(inner).blur(2.5).raw().toBuffer();
+const rendered = Buffer.from(raw);
+for (let y = 0; y < inner.height; y++)
+  calm.copy(rendered, ((inner.top + y) * width + inner.left) * 4, y * inner.width * 4, (y + 1) * inner.width * 4);
+
+const glazed = await sharp(behind)
+  .composite([{ input: rendered, raw: { width, height, channels: 4 } }])
+  .png()
+  .toBuffer();
+await sharp(glazed).webp({ ...WEBP, alphaQuality: 90 }).toFile(path.join(out, "window.webp"));
 
 for (const [id, part] of Object.entries(layout.parts)) {
   await sharp(path.join(src, `where-${id}.png`)).webp(WEBP).toFile(path.join(out, `where-${id}.webp`));
