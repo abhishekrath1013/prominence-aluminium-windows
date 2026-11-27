@@ -1,12 +1,33 @@
 ---
 // "Inside the frame" — Robus 40 component showcase.
-// Idle: the window stands centred. "View components" slides it to the left, dollies into the
-// first component (the surrounding frame turns to glass) and flies that component, in 3D and
-// turning slowly, out to the right with its description. Geometry/engine: src/animations/robus-components.ts
+// Idle: a straight-on photo of the window. "View components" moves it to the left, moves in on the first part,
+// frosts the frame around it so it shows through, and sends the part's close-up photo to the right with its
+// description. Behaviour: src/animations/robus-components.ts. Images: tools/render_robus40.py.
 import { robusComponents as comps } from "../data/robus-components";
+import layout from "../data/robus40-layout.json";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const total = comps.length;
+const media = "/media/robus40";
+
+const W = layout.width;
+const H = layout.height;
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
+const parts = comps.map((c) => {
+  const info = layout.parts[c.id as keyof typeof layout.parts];
+  const [x, y, w, h] = info.where;
+  // the frosted patch around the part, a little larger than the part itself (image pixels)
+  const m = 34;
+  // where its dot sits: the middle of the part (the gasket runs the full height, so a point well clear of the others)
+  const dot = [x + w / 2, y + h * (c.id === "gasket" ? 0.62 : 0.5)];
+  return {
+    ...c,
+    shot: info.shot,
+    box: `left:${pct(x, W)};top:${pct(y, H)};width:${pct(w, W)};height:${pct(h, H)}`,
+    veil: `left:${pct(x - m, W)};top:${pct(y - m, H)};width:${pct(w + 2 * m, W)};height:${pct(h + 2 * m, H)}`,
+    dot: `left:${pct(dot[0], W)};top:${pct(dot[1], H)}`,
+  };
+});
 ---
 
 <section
@@ -18,18 +39,25 @@ const total = comps.length;
   data-comps={JSON.stringify(comps)}
 >
   <div class="rx-bg" aria-hidden="true"></div>
-  <div class="rx-canvas" data-rx-canvas aria-hidden="true"></div>
 
-  <!-- where the window is drawn: full-width & centred while idle, left half once opened -->
+  <!-- the window photo; it is clipped to the left half once opened -->
+  <div class="rx-clip">
+    <div class="rx-win" data-rx-win>
+      <img class="rx-photo" src={`${media}/window.webp`} width={W} height={H} loading="lazy" decoding="async" alt="Robus 40 casement window with a black powder-coated aluminium frame, seen from inside the room" />
+      {
+        parts.map((p) => (
+          <div class="rx-spot" data-rx-spot={p.id} aria-hidden="true">
+            <i class="rx-veil" style={p.veil} />
+            <img class="rx-where" style={p.box} src={`${media}/where-${p.id}.webp`} loading="lazy" decoding="async" alt="" />
+          </div>
+        ))
+      }
+      {parts.map((p, i) => <button type="button" class="rx-dot" data-rx-dot={i} style={p.dot} aria-label={`View ${p.name}`} title={p.name} />)}
+    </div>
+  </div>
+
+  <!-- where the window is placed: full-width & centred while idle, left half once opened -->
   <div class="rx-vp-frame" data-rx-vp-frame aria-hidden="true"></div>
-
-  <svg class="rx-svg" data-rx-svg aria-hidden="true">
-    <line data-rx-line x1="0" y1="0" x2="0" y2="0"></line>
-    <g data-rx-pin>
-      <circle class="rx-pin-ring" r="16"></circle>
-      <circle class="rx-pin-dot" r="3.5"></circle>
-    </g>
-  </svg>
 
   <!-- ===== idle ===== -->
   <div class="rx-intro">
@@ -46,7 +74,7 @@ const total = comps.length;
         {
           comps.map((c, i) => (
             <li>
-              <button type="button" data-rx-pick={i} disabled aria-label={`View ${c.name}`}>
+              <button type="button" data-rx-pick={i} aria-label={`View ${c.name}`}>
                 <span>{pad(i + 1)}</span>
                 {c.name}
               </button>
@@ -56,11 +84,10 @@ const total = comps.length;
       </ol>
 
       <div class="rx-intro-cta">
-        <button type="button" class="btn-lux label-eyebrow" data-rx-open disabled>
+        <button type="button" class="btn-lux label-eyebrow" data-rx-open>
           <span>View components</span>
           <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true"><path d="M0 5h16M12 1l4 4-4 4" stroke="currentColor" stroke-width="1"></path></svg>
         </button>
-        <p class="label-eyebrow mt-5 text-ivory/40" data-rx-hint>Drag to turn the frame</p>
       </div>
     </div>
   </div>
@@ -96,9 +123,13 @@ const total = comps.length;
         }
       </div>
 
-      <!-- the part is drawn here by the canvas; drag to turn it -->
-      <div class="rx-stage" data-rx-vp-comp>
-        <span class="rx-stage-hint label-eyebrow">Drag to turn</span>
+      <!-- the part's close-up photo -->
+      <div class="rx-stage" data-rx-stage>
+        {
+          parts.map((p, i) => (
+            <img data-rx-shot={i} hidden={i !== 0} src={`${media}/part-${p.id}.webp`} width={p.shot[0]} height={p.shot[1]} loading="lazy" decoding="async" alt={p.name} />
+          ))
+        }
       </div>
 
       <!-- description (one per component) -->
@@ -124,7 +155,6 @@ const total = comps.length;
     </div>
   </div>
 
-  <p class="rx-loading label-eyebrow" data-rx-loading>Loading 3D…</p>
 </section>
 
 <style is:global>
@@ -170,29 +200,18 @@ const total = comps.length;
     opacity: 1;
   }
 
-  .rx-canvas {
+  /* ---------- the window photo ---------- */
+  .rx-clip {
     position: absolute;
-    inset: 0;
     z-index: 1;
+    inset: 0;
+    overflow: hidden;
     pointer-events: none;
-  }
-
-  /* ---------- where the window is drawn ---------- */
-  .rx-vp-frame {
-    position: absolute;
-    z-index: 2;
-    left: 0;
-    right: 0;
-    top: 7%;
-    bottom: 16%;
-    cursor: grab;
-    touch-action: pan-y;
     transition:
       right 1.05s var(--rx-ease),
-      top 1.05s var(--rx-ease),
       bottom 1.05s var(--rx-ease);
   }
-  .rx-vp-frame::after {
+  .rx-clip::after {
     content: "";
     position: absolute;
     right: 0;
@@ -203,49 +222,106 @@ const total = comps.length;
     opacity: 0;
     transition: opacity 0.8s ease 0.6s;
   }
-  .rx[data-state="open"] .rx-vp-frame::after {
+  .rx[data-state="open"] .rx-clip {
+    right: 50%;
+  }
+  .rx[data-state="open"] .rx-clip::after {
     opacity: 1;
   }
-  .rx-vp-frame.is-drag,
-  .rx-stage.is-drag {
-    cursor: grabbing;
+  /* sized and placed by the script in real pixels (not scaled with a transform), so it stays sharp up close.
+     --s is the number of screen pixels per image pixel */
+  .rx-win {
+    --s: 0.16;
+    position: absolute;
+    left: 0;
+    top: 0;
+    visibility: hidden;
+    pointer-events: auto;
+  }
+  .rx-win[data-placed] {
+    visibility: visible;
+  }
+  /* the shadow the frame throws; inset to the frame's outline inside the picture */
+  .rx-win::before {
+    content: "";
+    position: absolute;
+    inset: 1.5% 2.4%;
+    box-shadow: 0 calc(var(--s) * 110px) calc(var(--s) * 260px) rgb(0 0 0 / 0.7);
+  }
+  .rx-photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .rx-spot {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .rx-spot.is-on {
+    opacity: 1;
+    transition-duration: 0.9s;
+  }
+  /* the frame turns to frosted glass around the part */
+  .rx-veil {
+    position: absolute;
+    border-radius: calc(var(--s) * 40px);
+    background: rgb(222 230 234 / 0.74);
+    box-shadow: 0 0 calc(var(--s) * 55px) calc(var(--s) * 22px) rgb(222 230 234 / 0.62);
+  }
+  /* the part keeps its real finish; only its outline is brand green */
+  .rx-where {
+    position: absolute;
+    max-width: none;
+    filter: drop-shadow(0 0 1px #2f8a35) drop-shadow(0 0 1px #2f8a35) drop-shadow(0 0 5px rgb(66 155 70 / 0.65));
+  }
+  .rx-dot {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    translate: -50% -50%;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: opacity 0.4s ease, visibility 0.4s;
+  }
+  .rx-dot::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border-radius: inherit;
+    background: #5fbf63;
+    box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.9), 0 1px 5px rgb(0 0 0 / 0.55);
+    transition: scale 0.3s var(--rx-ease);
+  }
+  .rx-dot:hover::before,
+  .rx-dot:focus-visible::before {
+    scale: 1.4;
+  }
+  .rx[data-state="open"] .rx-dot {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* ---------- where the window is placed (measured by the script) ---------- */
+  .rx-vp-frame {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 7%;
+    bottom: 16%;
+    visibility: hidden;
+    pointer-events: none;
   }
   .rx[data-state="open"] .rx-vp-frame {
     right: 50%;
     top: 0;
     bottom: 0;
-  }
-
-  .rx-svg {
-    display: none; /* no leader line / pin between the window and the part */
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-    pointer-events: none;
-    opacity: var(--rx-line, 0);
-  }
-  .rx-svg line {
-    stroke: rgba(66, 155, 70, 0.85);
-    stroke-width: 1;
-    stroke-dasharray: 2 6;
-    stroke-linecap: round;
-  }
-  .rx-pin-dot {
-    fill: #5fbf63;
-  }
-  .rx-pin-ring {
-    fill: none;
-    stroke: rgba(95, 191, 99, 0.8);
-    stroke-width: 1;
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: rx-pulse 2.4s var(--rx-ease) infinite;
-  }
-  @keyframes rx-pulse {
-    0% { transform: scale(0.45); opacity: 1; }
-    100% { transform: scale(1.5); opacity: 0; }
   }
 
   /* ---------- idle copy ---------- */
@@ -309,9 +385,6 @@ const total = comps.length;
     color: var(--color-ivory);
     transform: translateX(-4px);
   }
-  .rx-index button:disabled {
-    cursor: progress;
-  }
   .rx-index span {
     font-family: var(--font-poppins);
     font-size: 0.95rem;
@@ -324,10 +397,6 @@ const total = comps.length;
     justify-self: center;
     text-align: center;
     pointer-events: auto;
-  }
-  .rx-intro-cta .btn-lux[disabled] {
-    opacity: 0.45;
-    pointer-events: none;
   }
 
   /* ---------- opened panel ---------- */
@@ -427,15 +496,21 @@ const total = comps.length;
     flex: 1 1 0;
     min-height: 120px;
     margin: clamp(0.4rem, 1.5svh, 1rem) 0;
-    cursor: grab;
-    touch-action: pan-y;
   }
-  .rx-stage-hint {
+  /* a soft pool of light so the dark fittings stand clear of the background */
+  .rx-stage::before {
+    content: "";
     position: absolute;
-    left: 0;
-    bottom: 0;
-    color: rgb(241 236 226 / 0.35);
-    pointer-events: none;
+    inset: 0;
+    background: radial-gradient(ellipse 46% 48% at 50% 50%, rgb(255 255 255 / 0.09), transparent 72%);
+  }
+  .rx-stage img {
+    position: absolute;
+    inset: 4%;
+    width: 92%;
+    height: 92%;
+    object-fit: contain;
+    filter: drop-shadow(0 18px 22px rgb(0 0 0 / 0.5));
   }
   .rx-desc {
     font-family: var(--font-sans);
@@ -472,19 +547,6 @@ const total = comps.length;
     color: var(--color-ink);
   }
 
-  .rx-loading {
-    position: absolute;
-    z-index: 4;
-    left: 50%;
-    top: 50%;
-    translate: -50% -50%;
-    color: rgb(241 236 226 / 0.45);
-    pointer-events: none;
-  }
-  .rx-loading[hidden] {
-    display: none;
-  }
-
   /* ---------- tablet / phone: window on top, part below, description under that ---------- */
   @media (max-width: 1023px) {
     /* leave the heading and paragraph clear above the window */
@@ -497,6 +559,13 @@ const total = comps.length;
       top: 0;
       bottom: auto;
       height: 38svh;
+    }
+    .rx[data-state="open"] .rx-clip {
+      right: 0;
+      bottom: calc(100% - 38svh);
+    }
+    .rx[data-state="open"] .rx-clip::after {
+      opacity: 0;
     }
     .rx-intro-grid {
       grid-template-columns: 1fr;
@@ -532,76 +601,11 @@ const total = comps.length;
     .rx-desc {
       font-size: 1.05rem;
     }
-    [data-rx-hint] {
-      display: none;
-    }
   }
 </style>
 
 <script>
-  import { robusComponents } from "../data/robus-components";
-
+  import { mountRobusComponents } from "../animations/robus-components";
   const root = document.querySelector<HTMLElement>("[data-rx]");
-  if (root) {
-    let started = false;
-
-    /** No WebGL (or it failed): the same panel works as a plain text tour. */
-    const textOnly = (msg: string) => {
-      const loading = root.querySelector<HTMLElement>("[data-rx-loading]");
-      if (loading) {
-        loading.textContent = msg;
-        loading.hidden = false;
-      }
-      const items = Array.from(root.querySelectorAll<HTMLElement>("[data-rx-item]"));
-      const chips = Array.from(root.querySelectorAll<HTMLElement>("[data-rx-chip]"));
-      const count = root.querySelector<HTMLElement>("[data-rx-count]");
-      let i = 0;
-      const show = (n: number) => {
-        i = (n + robusComponents.length) % robusComponents.length;
-        items.forEach((el) => (el.hidden = Number(el.dataset.rxItem) !== i));
-        chips.forEach((c, k) => c.setAttribute("aria-current", String(k === i)));
-        if (count) count.textContent = String(i + 1).padStart(2, "0");
-      };
-      const btn = root.querySelector<HTMLButtonElement>("[data-rx-open]")!;
-      btn.disabled = false;
-      const openAt = (n: number) => {
-        root.dataset.state = "open";
-        if (loading) loading.hidden = true;
-        show(n);
-      };
-      btn.addEventListener("click", () => openAt(0));
-      root.querySelectorAll<HTMLElement>("[data-rx-pick]").forEach((b) => {
-        (b as HTMLButtonElement).disabled = false;
-        b.addEventListener("click", () => openAt(Number(b.dataset.rxPick)));
-      });
-      root.querySelector("[data-rx-close]")?.addEventListener("click", () => (root.dataset.state = "idle"));
-      root.querySelector("[data-rx-prev]")?.addEventListener("click", () => show(i - 1));
-      root.querySelector("[data-rx-next]")?.addEventListener("click", () => show(i + 1));
-      chips.forEach((c, k) => c.addEventListener("click", () => show(k)));
-    };
-
-    const boot = async () => {
-      if (started) return;
-      started = true;
-      try {
-        const probe = document.createElement("canvas");
-        if (!(probe.getContext("webgl2") || probe.getContext("webgl"))) throw new Error("no webgl");
-        // a flaky first load of the 3D module (network hiccup, dev-server rebuild) gets one more try before we give up
-        let mod: typeof import("../animations/robus-components");
-        try {
-          mod = await import("../animations/robus-components");
-        } catch (first) {
-          console.warn("[robus-components] retrying module load", first);
-          await new Promise((r) => setTimeout(r, 1200));
-          mod = await import("../animations/robus-components");
-        }
-        await mod.mountRobusComponents(root, robusComponents);
-      } catch (e) {
-        console.warn("[robus-components]", e);
-        const noGl = e instanceof Error && e.message === "no webgl";
-        textOnly(noGl ? "3D preview needs WebGL — the component guide still works." : "The 3D preview couldn’t load — the component guide still works.");
-      }
-    };
-    new IntersectionObserver((es) => es.some((e) => e.isIntersecting) && boot(), { rootMargin: "1400px 0px" }).observe(root);
-  }
+  if (root) mountRobusComponents(root);
 </script>

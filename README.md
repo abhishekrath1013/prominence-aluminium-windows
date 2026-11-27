@@ -1,6 +1,6 @@
 # Prominance — Aluminium Windows
 
-Marketing site for Prominance / Uniframe aluminium window, door and facade systems. Astro 7, Tailwind CSS v4, GSAP + ScrollTrigger, Lenis smooth scroll and three.js for the 3D sections.
+Marketing site for Prominance / Uniframe aluminium window, door and facade systems. Astro 7, Tailwind CSS v4, GSAP + ScrollTrigger and Lenis smooth scroll.
 
 ## Design system
 
@@ -14,13 +14,15 @@ Marketing site for Prominance / Uniframe aluminium window, door and facade syste
 src/
   pages/            index (homepage), products, product pages, about-us, contact-us, insights (blog + articles), projects, ...
   components/home/  homepage sections: Hero, Unique, Promise (statement/factory/21-day), Vault, HomeNav
-  components/       InnerNav, PageHero, ProductCard/List/Detail, ArticleCard, Configurator (3D), RobusComponents (3D), ContactCta, Footer
+  components/       InnerNav, PageHero, ProductCard/List/Detail, ArticleCard, Configurator (window wall), RobusComponents (window photos), ContactCta, Footer
   animations/       site.ts (smooth scroll, reveals, stacked panels), home.ts (homepage entrances), configurator.ts, robus-components.ts
   data/             products, finishes, projects, insights + articles (blog text), company, robus-components
   assets/home/      homepage photography and cut-outs (optimised at build time)
 public/
-  models/robus40/   GLB models for the "Inside the frame" section (Draco-compressed, decoder in public/draco)
-tools/              export_robus40.py — exports the models from the Blender source
+  media/robus40/    photo-real stills for the "Inside the frame" section
+  models/robus40/   GLB models and public/draco — no longer used by the site
+tools/              render_robus40.py (renders the stills from the Blender source) + compose_robus40.mjs (web images);
+                    export_robus40.py exported the old GLB models
 ```
 
 ## Homepage scroll behaviour
