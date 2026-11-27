@@ -1,6 +1,6 @@
 ---
 // "Inside the frame" — Robus 40 component showcase.
-// Idle: a straight-on photo of the whole window with shiny glass. "View components" moves it to the right (never
+// Idle: a straight-on photo of the whole window with clear glass. "View components" moves it to the right (never
 // zoomed), frosts the frame around the chosen part so it shows through, and shows that part in slowly moving 3D on
 // the left with its description. Behaviour: src/animations/robus-components.ts + part-viewer.ts.
 // Window images: tools/render_robus40.py + tools/compose_robus40.mjs.
@@ -14,9 +14,6 @@ const media = "/media/robus40";
 const W = layout.width;
 const H = layout.height;
 const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
-const [gx, gy, gw, gh] = layout.glass;
-const glass = `left:${pct(gx, W)};top:${pct(gy, H)};width:${pct(gw, W)};height:${pct(gh, H)}`;
-
 const parts = comps.map((c) => {
   const info = layout.parts[c.id as keyof typeof layout.parts];
   const [x, y, w, h] = info.where;
@@ -46,8 +43,7 @@ const parts = comps.map((c) => {
 
   <!-- the window photo, always shown whole -->
   <div class="rx-win" data-rx-win>
-    <img class="rx-photo" src={`${media}/window.webp`} width={W} height={H} loading="lazy" decoding="async" alt="Robus 40 casement window with a black powder-coated aluminium frame and glossy glass" />
-    <div class="rx-glint" style={glass} aria-hidden="true"><i></i></div>
+    <img class="rx-photo" src={`${media}/window.webp`} width={W} height={H} loading="lazy" decoding="async" alt="Robus 40 casement window with a black powder-coated aluminium frame and clear glass" />
     {
       parts.map((p) => (
         <div class="rx-spot" data-rx-spot={p.id} aria-hidden="true">
@@ -237,36 +233,6 @@ const parts = comps.map((c) => {
     max-width: none;
     user-select: none;
     -webkit-user-drag: none;
-  }
-  .rx-glint {
-    position: absolute;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  .rx-glint i {
-    position: absolute;
-    top: -10%;
-    bottom: -10%;
-    left: 0;
-    width: 100%;
-    background: linear-gradient(112deg, transparent 32%, rgb(214 236 255 / 0.07) 43%, rgb(236 247 255 / 0.2) 49%, rgb(214 236 255 / 0.04) 52%, transparent 56%, transparent 59%, rgb(236 247 255 / 0.11) 60%, transparent 62%);
-    mix-blend-mode: screen;
-    translate: -105% 0;
-    animation: rx-glint 9s cubic-bezier(0.45, 0, 0.25, 1) infinite;
-  }
-  @keyframes rx-glint {
-    0% {
-      translate: -105% 0;
-    }
-    55%,
-    100% {
-      translate: 105% 0;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .rx-glint i {
-      display: none;
-    }
   }
   .rx-spot {
     position: absolute;
