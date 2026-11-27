@@ -231,6 +231,15 @@
   box-shadow: calc(var(--mm) * -14) 0 calc(var(--mm) * 24) calc(var(--mm) * 2) rgb(0 0 0 / 0.45);
 }
 
+/* the solid drawing of open leaves; it is lit by the same time of day and switch as the flat parts */
+.wn__scene .wn-solid {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: brightness(var(--lit));
+  transition: filter 0.9s ease;
+}
+
 /* ---------------- glass ---------------- */
 .wn-glass {
   background: linear-gradient(180deg, rgb(150 205 195 / 0.035), rgb(150 205 195 / 0.012));
@@ -306,7 +315,7 @@
 .wn-leafshade {
   inset: 0;
   background: #05080c;
-  opacity: var(--turn, 0);
+  opacity: 0;
 }
 
 /* ---------------- bay head and sill ---------------- */

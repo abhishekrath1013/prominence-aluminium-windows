@@ -15,7 +15,7 @@ src/
   pages/            index (homepage), products, product pages, about-us, contact-us, insights (blog + articles), projects, ...
   components/home/  homepage sections: Hero, Unique, Promise (statement/factory/21-day), Vault, HomeNav
   components/       InnerNav, PageHero, ProductCard/List/Detail, ArticleCard, Configurator (window wall), RobusComponents (window photo + 3D parts), ContactCta, Footer
-  animations/       site.ts (smooth scroll, reveals, stacked panels), home.ts (homepage entrances), configurator.ts, robus-components.ts, part-viewer.ts (the 3D component)
+  animations/       site.ts (smooth scroll, reveals, stacked panels), home.ts (homepage entrances), configurator.ts, open-leaves.ts (solid drawing of opening window leaves), robus-components.ts, part-viewer.ts (the 3D component)
   data/             products, finishes, projects, insights + articles (blog text), company, robus-components
   assets/home/      homepage photography and cut-outs (optimised at build time)
 public/
