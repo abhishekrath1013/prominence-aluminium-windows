@@ -14,15 +14,15 @@ Marketing site for Prominance / Uniframe aluminium window, door and facade syste
 src/
   pages/            index (homepage), products, product pages, about-us, contact-us, insights (blog + articles), projects, ...
   components/home/  homepage sections: Hero, Unique, Promise (statement/factory/21-day), Vault, HomeNav
-  components/       InnerNav, PageHero, ProductCard/List/Detail, ArticleCard, Configurator (window wall), RobusComponents (window photos), ContactCta, Footer
-  animations/       site.ts (smooth scroll, reveals, stacked panels), home.ts (homepage entrances), configurator.ts, robus-components.ts
+  components/       InnerNav, PageHero, ProductCard/List/Detail, ArticleCard, Configurator (window wall), RobusComponents (window photo + 3D parts), ContactCta, Footer
+  animations/       site.ts (smooth scroll, reveals, stacked panels), home.ts (homepage entrances), configurator.ts, robus-components.ts, part-viewer.ts (the 3D component)
   data/             products, finishes, projects, insights + articles (blog text), company, robus-components
   assets/home/      homepage photography and cut-outs (optimised at build time)
 public/
-  media/robus40/    photo-real stills for the "Inside the frame" section
-  models/robus40/   GLB models and public/draco — no longer used by the site
-tools/              render_robus40.py (renders the stills from the Blender source) + compose_robus40.mjs (web images);
-                    export_robus40.py exported the old GLB models
+  media/robus40/    window images, fallback part photos and studio.exr (3D lighting, CC0 from Poly Haven) for "Inside the frame"
+  models/robus40/   c1-c9 GLB: the 3D components (decoded by public/draco); frame.glb and manifest.json are no longer used
+tools/              render_robus40.py (renders the window and part stills from the Blender source) + compose_robus40.mjs (web images);
+                    export_robus40.py exports the GLB models
 ```
 
 ## Homepage scroll behaviour

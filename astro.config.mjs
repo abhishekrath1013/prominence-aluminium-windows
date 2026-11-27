@@ -10,7 +10,7 @@ export default defineConfig({
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
-    // The 3D sections load their code lazily, so in dev Vite would only discover three.js and friends when a visitor
+    // The component viewer loads its 3D code lazily, so in dev Vite would only discover three.js and friends when a visitor
     // scrolls to them, re-bundle mid-session and answer the page's old requests with "504 Outdated Optimize Dep" —
     // which showed up as "3D preview needs WebGL". Listing them here bundles them once, up front.
     optimizeDeps: {
@@ -18,7 +18,7 @@ export default defineConfig({
         'three',
         'three/examples/jsm/loaders/GLTFLoader.js',
         'three/examples/jsm/loaders/DRACOLoader.js',
-        'three/examples/jsm/controls/OrbitControls.js',
+        'three/examples/jsm/loaders/EXRLoader.js',
         'gsap',
         'gsap/ScrollTrigger',
         'lenis',

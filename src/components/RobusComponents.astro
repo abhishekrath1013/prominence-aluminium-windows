@@ -1,8 +1,9 @@
 ---
 // "Inside the frame" — Robus 40 component showcase.
-// Idle: a straight-on photo of the window. "View components" moves it to the left, moves in on the first part,
-// frosts the frame around it so it shows through, and sends the part's close-up photo to the right with its
-// description. Behaviour: src/animations/robus-components.ts. Images: tools/render_robus40.py.
+// Idle: a straight-on photo of the whole window with shiny glass. "View components" moves it to the right (never
+// zoomed), frosts the frame around the chosen part so it shows through, and shows that part in slowly moving 3D on
+// the left with its description. Behaviour: src/animations/robus-components.ts + part-viewer.ts.
+// Window images: tools/render_robus40.py + tools/compose_robus40.mjs.
 import { robusComponents as comps } from "../data/robus-components";
 import layout from "../data/robus40-layout.json";
 
@@ -13,6 +14,9 @@ const media = "/media/robus40";
 const W = layout.width;
 const H = layout.height;
 const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
+const [gx, gy, gw, gh] = layout.glass;
+const glass = `left:${pct(gx, W)};top:${pct(gy, H)};width:${pct(gw, W)};height:${pct(gh, H)}`;
+
 const parts = comps.map((c) => {
   const info = layout.parts[c.id as keyof typeof layout.parts];
   const [x, y, w, h] = info.where;
@@ -40,23 +44,23 @@ const parts = comps.map((c) => {
 >
   <div class="rx-bg" aria-hidden="true"></div>
 
-  <!-- the window photo; it is clipped to the left half once opened -->
-  <div class="rx-clip">
-    <div class="rx-win" data-rx-win>
-      <img class="rx-photo" src={`${media}/window.webp`} width={W} height={H} loading="lazy" decoding="async" alt="Robus 40 casement window with a black powder-coated aluminium frame, seen from inside the room" />
-      {
-        parts.map((p) => (
-          <div class="rx-spot" data-rx-spot={p.id} aria-hidden="true">
-            <i class="rx-veil" style={p.veil} />
-            <img class="rx-where" style={p.box} src={`${media}/where-${p.id}.webp`} loading="lazy" decoding="async" alt="" />
-          </div>
-        ))
-      }
-      {parts.map((p, i) => <button type="button" class="rx-dot" data-rx-dot={i} style={p.dot} aria-label={`View ${p.name}`} title={p.name} />)}
-    </div>
+  <!-- the window photo, always shown whole -->
+  <div class="rx-win" data-rx-win>
+    <img class="rx-photo" src={`${media}/window.webp`} width={W} height={H} loading="lazy" decoding="async" alt="Robus 40 casement window with a black powder-coated aluminium frame and glossy glass" />
+    <div class="rx-glint" style={glass} aria-hidden="true"><i></i></div>
+    {
+      parts.map((p) => (
+        <div class="rx-spot" data-rx-spot={p.id} aria-hidden="true">
+          <i class="rx-veil" style={p.veil} />
+          <img class="rx-where" style={p.box} src={`${media}/where-${p.id}.webp`} loading="lazy" decoding="async" alt="" />
+          <i class="rx-mark" style={p.dot} />
+        </div>
+      ))
+    }
+    {parts.map((p, i) => <button type="button" class="rx-dot" data-rx-dot={i} style={p.dot} aria-label={`View ${p.name}`} title={p.name} />)}
   </div>
 
-  <!-- where the window is placed: full-width & centred while idle, left half once opened -->
+  <!-- where the window is placed: full-width & centred while idle, right half once opened -->
   <div class="rx-vp-frame" data-rx-vp-frame aria-hidden="true"></div>
 
   <!-- ===== idle ===== -->
@@ -123,13 +127,17 @@ const parts = comps.map((c) => {
         }
       </div>
 
-      <!-- the part's close-up photo -->
+      <!-- the part in 3D (its still photo appears only if 3D can't start) -->
       <div class="rx-stage" data-rx-stage>
-        {
-          parts.map((p, i) => (
-            <img data-rx-shot={i} hidden={i !== 0} src={`${media}/part-${p.id}.webp`} width={p.shot[0]} height={p.shot[1]} loading="lazy" decoding="async" alt={p.name} />
-          ))
-        }
+        <div class="rx-model" data-rx-model>
+          <div class="rx-3d" data-rx-3d role="img" aria-label="3D view of the selected component"></div>
+          {
+            parts.map((p, i) => (
+              <img data-rx-still={i} hidden src={`${media}/part-${p.id}.webp`} width={p.shot[0]} height={p.shot[1]} loading="lazy" decoding="async" alt={p.name} />
+            ))
+          }
+        </div>
+        <p class="rx-hint label-eyebrow" data-rx-hint>Drag to turn</p>
       </div>
 
       <!-- description (one per component) -->
@@ -190,8 +198,8 @@ const parts = comps.map((c) => {
   .rx-bg::after {
     opacity: 0;
     background:
-      radial-gradient(ellipse 30% 56% at 25% 50%, rgba(66, 155, 70, 0.18), transparent 70%),
-      radial-gradient(ellipse 28% 50% at 75% 46%, rgba(255, 255, 255, 0.05), transparent 70%);
+      radial-gradient(ellipse 30% 56% at 75% 50%, rgba(66, 155, 70, 0.18), transparent 70%),
+      radial-gradient(ellipse 28% 50% at 25% 46%, rgba(255, 255, 255, 0.05), transparent 70%);
   }
   .rx[data-state="open"] .rx-bg::before {
     opacity: 0;
@@ -201,42 +209,15 @@ const parts = comps.map((c) => {
   }
 
   /* ---------- the window photo ---------- */
-  .rx-clip {
-    position: absolute;
-    z-index: 1;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    transition:
-      right 1.05s var(--rx-ease),
-      bottom 1.05s var(--rx-ease);
-  }
-  .rx-clip::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: linear-gradient(to bottom, transparent, rgb(241 236 226 / 0.16) 20%, rgb(241 236 226 / 0.16) 80%, transparent);
-    opacity: 0;
-    transition: opacity 0.8s ease 0.6s;
-  }
-  .rx[data-state="open"] .rx-clip {
-    right: 50%;
-  }
-  .rx[data-state="open"] .rx-clip::after {
-    opacity: 1;
-  }
-  /* sized and placed by the script in real pixels (not scaled with a transform), so it stays sharp up close.
+  /* sized and placed by the script in real pixels (not scaled with a transform), so it stays sharp.
      --s is the number of screen pixels per image pixel */
   .rx-win {
     --s: 0.16;
     position: absolute;
+    z-index: 1;
     left: 0;
     top: 0;
     visibility: hidden;
-    pointer-events: auto;
   }
   .rx-win[data-placed] {
     visibility: visible;
@@ -256,6 +237,36 @@ const parts = comps.map((c) => {
     max-width: none;
     user-select: none;
     -webkit-user-drag: none;
+  }
+  .rx-glint {
+    position: absolute;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .rx-glint i {
+    position: absolute;
+    top: -10%;
+    bottom: -10%;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(112deg, transparent 32%, rgb(214 236 255 / 0.07) 43%, rgb(236 247 255 / 0.2) 49%, rgb(214 236 255 / 0.04) 52%, transparent 56%, transparent 59%, rgb(236 247 255 / 0.11) 60%, transparent 62%);
+    mix-blend-mode: screen;
+    translate: -105% 0;
+    animation: rx-glint 9s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  }
+  @keyframes rx-glint {
+    0% {
+      translate: -105% 0;
+    }
+    55%,
+    100% {
+      translate: 105% 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rx-glint i {
+      display: none;
+    }
   }
   .rx-spot {
     position: absolute;
@@ -281,6 +292,38 @@ const parts = comps.map((c) => {
     max-width: none;
     filter: drop-shadow(0 0 1px #2f8a35) drop-shadow(0 0 1px #2f8a35) drop-shadow(0 0 5px rgb(66 155 70 / 0.65));
   }
+  .rx-mark {
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    translate: -50% -50%;
+    border: 2px solid #6fd674;
+    border-radius: 999px;
+    box-shadow: 0 0 10px rgb(66 155 70 / 0.8), inset 0 0 8px rgb(66 155 70 / 0.5);
+  }
+  .rx-mark::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border: 1.5px solid #6fd674;
+    border-radius: inherit;
+    animation: rx-ping 1.8s ease-out infinite;
+  }
+  @keyframes rx-ping {
+    from {
+      scale: 1;
+      opacity: 0.9;
+    }
+    to {
+      scale: 1.9;
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rx-mark::after {
+      display: none;
+    }
+  }
   .rx-dot {
     position: absolute;
     width: 26px;
@@ -303,8 +346,11 @@ const parts = comps.map((c) => {
   .rx-dot:focus-visible::before {
     scale: 1.4;
   }
-  .rx[data-state="open"] .rx-dot {
-    opacity: 0;
+  .rx[data-state="open"] .rx-dot::before {
+    opacity: 0.7;
+    inset: 9px;
+  }
+  .rx[data-state="open"] .rx-dot.is-current {
     visibility: hidden;
   }
 
@@ -319,9 +365,10 @@ const parts = comps.map((c) => {
     pointer-events: none;
   }
   .rx[data-state="open"] .rx-vp-frame {
-    right: 50%;
-    top: 0;
-    bottom: 0;
+    left: 50%;
+    right: 0;
+    top: clamp(92px, 11svh, 124px);
+    bottom: clamp(24px, 5svh, 56px);
   }
 
   /* ---------- idle copy ---------- */
@@ -404,8 +451,8 @@ const parts = comps.map((c) => {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 50%;
-    right: 0;
+    left: 0;
+    right: 50%;
     z-index: 3;
     opacity: 0;
     visibility: hidden;
@@ -418,11 +465,20 @@ const parts = comps.map((c) => {
     pointer-events: auto;
     transition: opacity 0.9s ease 0.55s, visibility 0s 0.55s;
   }
+  .rx-panel::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgb(241 236 226 / 0.16) 20%, rgb(241 236 226 / 0.16) 80%, transparent);
+  }
   .rx-panel-inner {
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: clamp(92px, 11svh, 124px) var(--gutter) clamp(24px, 4svh, 44px) clamp(1rem, 3vw, 3.5rem);
+    padding: clamp(92px, 11svh, 124px) clamp(1rem, 3vw, 3.5rem) clamp(24px, 4svh, 44px) var(--gutter);
   }
   .rx-bar {
     display: flex;
@@ -504,13 +560,40 @@ const parts = comps.map((c) => {
     inset: 0;
     background: radial-gradient(ellipse 46% 48% at 50% 50%, rgb(255 255 255 / 0.09), transparent 72%);
   }
-  .rx-stage img {
+  .rx-model,
+  .rx-3d {
+    position: absolute;
+    inset: 0;
+  }
+  .rx-3d[hidden],
+  .rx-hint[hidden] {
+    display: none;
+  }
+  .rx-3d canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    /* a sideways swipe turns the part; up and down still scrolls the page */
+    touch-action: pan-y;
+    filter: drop-shadow(0 18px 22px rgb(0 0 0 / 0.45));
+  }
+  .rx-3d canvas.is-drag {
+    cursor: grabbing;
+  }
+  .rx-model img {
     position: absolute;
     inset: 4%;
     width: 92%;
     height: 92%;
     object-fit: contain;
-    filter: drop-shadow(0 18px 22px rgb(0 0 0 / 0.5));
+  }
+  .rx-hint {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: rgb(241 236 226 / 0.35);
+    pointer-events: none;
   }
   .rx-desc {
     font-family: var(--font-sans);
@@ -555,17 +638,25 @@ const parts = comps.map((c) => {
       bottom: 17%;
     }
     .rx[data-state="open"] .rx-vp-frame {
+      left: 0;
       right: 0;
-      top: 0;
+      top: 76px;
       bottom: auto;
-      height: 38svh;
+      height: calc(40svh - 84px);
     }
-    .rx[data-state="open"] .rx-clip {
-      right: 0;
-      bottom: calc(100% - 38svh);
+    .rx-panel::after {
+      display: none;
     }
-    .rx[data-state="open"] .rx-clip::after {
+    .rx-mark {
+      width: 30px;
+      height: 30px;
+    }
+    .rx[data-state="open"] .rx-dot {
       opacity: 0;
+      visibility: hidden;
+    }
+    .rx-hint {
+      display: none;
     }
     .rx-intro-grid {
       grid-template-columns: 1fr;
@@ -583,8 +674,8 @@ const parts = comps.map((c) => {
       grid-row: 3;
     }
     .rx-panel {
-      left: 0;
-      top: 38svh;
+      right: 0;
+      top: 40svh;
     }
     .rx-panel-inner {
       padding: 0.75rem var(--gutter) 1.25rem;

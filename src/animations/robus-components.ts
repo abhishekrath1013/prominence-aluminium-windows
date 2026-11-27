@@ -1,34 +1,30 @@
 import { gsap } from "gsap";
 import layout from "../data/robus40-layout.json";
 import { robusComponents as comps } from "../data/robus-components";
+import type { PartViewer } from "./part-viewer";
 
 /* ==========================================================================
    "Inside the frame" — Robus 40 component showcase.
 
-   Everything on screen is a photo-real still, seen straight on:
-     • the window  – idle: centred. Open: it moves to the left half and the view
-       moves in on the part being shown, which appears through a frosted patch
-       of the frame (a second picture of the part alone, from the same camera).
-     • the part    – its close-up photo flies from that spot to the right.
+     • the window  – a photo-real still seen straight on, always shown whole.
+       Idle: centred. Open: it moves to the right, and the part being shown
+       appears through a frosted patch of the frame with a ring around its spot.
+     • the part    – live 3D (part-viewer.ts) on the left, swaying slowly. It
+       flies there from its spot on the window. If 3D can't start, its still
+       photo is shown instead.
    Where the window goes is dictated by a placeholder element in the page, so
    the layout stays in CSS.
    ========================================================================== */
 
-/** where the window picture is: image point (cx, cy) sits at screen point (sx, sy), at s screen px per image px */
+/** where the window picture is: its top-left corner on screen, at s screen px per image px */
 interface View {
-  cx: number;
-  cy: number;
-  sx: number;
-  sy: number;
+  x: number;
+  y: number;
   s: number;
 }
 
 const W = layout.width;
 const H = layout.height;
-/** a close-up never shows less than this much of the window (image px, about 40 cm), so you can tell where you are */
-const MIN_REGION = 950;
-/** and is never drawn larger than this many screen px per image px, which would turn soft */
-const MAX_SCALE = 0.85;
 
 export function mountRobusComponents(root: HTMLElement) {
   const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
@@ -39,16 +35,21 @@ export function mountRobusComponents(root: HTMLElement) {
   const win = $("[data-rx-win]");
   const vpFrame = $("[data-rx-vp-frame]");
   const stage = $("[data-rx-stage]");
+  const model = $("[data-rx-model]");
+  const host = $("[data-rx-3d]");
+  const hint = $("[data-rx-hint]");
   const spots = $$("[data-rx-spot]");
-  const shots = $$<HTMLImageElement>("[data-rx-shot]");
+  const dots = $$("[data-rx-dot]");
+  const stills = $$<HTMLImageElement>("[data-rx-still]");
   const items = $$("[data-rx-item]");
   const chips = $$<HTMLButtonElement>("[data-rx-chip]");
   const countEl = root.querySelector<HTMLElement>("[data-rx-count]");
 
   const S = { open: false, index: 0 };
+  let visible = false;
 
   /* ---------------- the window ---------------- */
-  const view: View = { cx: W / 2, cy: H / 2, sx: 0, sy: 0, s: 0.1 };
+  const view: View = { x: 0, y: 0, s: 0.1 };
 
   function relRect(el: HTMLElement) {
     const base = root.getBoundingClientRect();
@@ -56,27 +57,17 @@ export function mountRobusComponents(root: HTMLElement) {
     return { w: r.width, h: r.height, cx: r.left - base.left + r.width / 2, cy: r.top - base.top + r.height / 2 };
   }
 
+  /** the whole window, as large as its place allows */
   function target(): View {
     const vp = relRect(vpFrame);
-    const fit = Math.min(vp.w / W, vp.h / H);
-    const whole: View = { cx: W / 2, cy: H / 2, sx: vp.cx, sy: vp.cy, s: fit };
-    if (!S.open) return whole;
-
-    const [x, y, w, h] = layout.parts[comps[S.index].id as keyof typeof layout.parts].where;
-    const s = gsap.utils.clamp(fit, Math.max(fit, MAX_SCALE), Math.min(vp.w / Math.max(w * 1.45, MIN_REGION), vp.h / Math.max(h * 1.3, MIN_REGION)));
-    /* centre on the part, without drifting far past the window's edge; an axis that fits entirely stays centred */
-    const along = (centre: number, size: number, room: number) => {
-      if (size * s <= room) return size / 2;
-      const edge = (room / s) * 0.22;
-      return gsap.utils.clamp(edge, size - edge, centre);
-    };
-    return { cx: along(x + w / 2, W, vp.w), cy: along(y + h / 2, H, vp.h), sx: vp.cx, sy: vp.cy, s };
+    const s = Math.min(vp.w / W, vp.h / H);
+    return { x: vp.cx - (W * s) / 2, y: vp.cy - (H * s) / 2, s };
   }
 
   function apply() {
     win.style.width = `${W * view.s}px`;
     win.style.height = `${H * view.s}px`;
-    win.style.transform = `translate3d(${view.sx - view.cx * view.s}px, ${view.sy - view.cy * view.s}px, 0)`;
+    win.style.transform = `translate3d(${view.x}px, ${view.y}px, 0)`;
     win.style.setProperty("--s", view.s.toFixed(4));
     win.dataset.placed = "";
   }
@@ -84,22 +75,7 @@ export function mountRobusComponents(root: HTMLElement) {
   let move: gsap.core.Tween | null = null;
   function moveTo(to: View, seconds: number) {
     move?.kill();
-    const from = { ...view };
-    const k = { t: 0 };
-    move = gsap.to(k, {
-      t: 1,
-      duration: dur(seconds),
-      ease: "power3.inOut",
-      onUpdate: () => {
-        const mix = (a: number, b: number) => a + (b - a) * k.t;
-        view.cx = mix(from.cx, to.cx);
-        view.cy = mix(from.cy, to.cy);
-        view.sx = mix(from.sx, to.sx);
-        view.sy = mix(from.sy, to.sy);
-        view.s = from.s * Math.pow(to.s / from.s, k.t); // zooming feels even when the scale grows geometrically
-        apply();
-      },
-    });
+    move = gsap.to(view, { ...to, duration: dur(seconds), ease: "power3.inOut", onUpdate: apply });
   }
 
   function settle() {
@@ -112,6 +88,67 @@ export function mountRobusComponents(root: HTMLElement) {
   function light(i: number | null) {
     const id = i === null ? "" : comps[i].id;
     spots.forEach((el) => el.classList.toggle("is-on", el.dataset.rxSpot === id));
+    // once open, the ring marks the part, so its dot would only cover it up
+    dots.forEach((el, k) => el.classList.toggle("is-current", S.open && k === i));
+  }
+
+  /* ---------------- the 3D part ---------------- */
+  let viewer: Promise<PartViewer | null> | null = null;
+  /** loaded only when the visitor gets near the section, so the 3D library doesn't slow the page down */
+  function getViewer() {
+    viewer ??= import("./part-viewer")
+      .then((m) => m.createPartViewer(host, comps.map((c) => c.id)))
+      .catch((e) => {
+        console.warn("3D view unavailable, showing photos instead:", e);
+        return null;
+      });
+    return viewer;
+  }
+
+  const running = () => S.open && visible && !document.hidden;
+  const refreshRun = () => viewer?.then((v) => v?.run(running()));
+  document.addEventListener("visibilitychange", refreshRun);
+
+  function useStill(i: number | null) {
+    stills.forEach((img, k) => (img.hidden = k !== i));
+    host.hidden = i !== null;
+    hint.hidden = i !== null;
+  }
+
+  /** the part leaves its place on the window and settles on the stage */
+  let turn = 0;
+  async function present(i: number, to: View, delay: number) {
+    const mine = ++turn;
+    gsap.killTweensOf(model);
+    gsap.set(model, { opacity: 0 });
+    const started = performance.now();
+
+    const v = await getViewer();
+    if (mine !== turn) return;
+    let shown = false;
+    if (v) {
+      try {
+        useStill(null);
+        await v.show(i);
+        shown = true;
+      } catch (e) {
+        console.warn("3D model failed to load:", e);
+      }
+      if (mine !== turn) return;
+      v.run(running());
+    }
+    if (!shown) useStill(i);
+
+    const [x, y, w, h] = layout.parts[comps[i].id as keyof typeof layout.parts].where;
+    const st = relRect(stage);
+    const dx = to.x + (x + w / 2) * to.s - st.cx;
+    const dy = to.y + (y + h / 2) * to.s - st.cy;
+    const waited = (performance.now() - started) / 1000;
+    gsap.fromTo(
+      model,
+      { x: dx, y: dy, scale: 0.1, opacity: 0 },
+      { x: 0, y: 0, scale: 1, opacity: 1, duration: dur(1.1), delay: dur(Math.max(0, delay - waited)), ease: "power3.out" }
+    );
   }
 
   /* ---------------- the panel ---------------- */
@@ -130,31 +167,14 @@ export function mountRobusComponents(root: HTMLElement) {
     if (countEl) countEl.textContent = String(i + 1).padStart(2, "0");
   }
 
-  /** the close-up leaves the part's place on the window and settles on the stage */
-  function flyShot(i: number, to: View, delay: number) {
-    shots.forEach((img, k) => {
-      gsap.killTweensOf(img);
-      img.hidden = k !== i;
-    });
-    const [x, y, w, h] = layout.parts[comps[i].id as keyof typeof layout.parts].where;
-    const st = relRect(stage);
-    const dx = to.sx + (x + w / 2 - to.cx) * to.s - st.cx;
-    const dy = to.sy + (y + h / 2 - to.cy) * to.s - st.cy;
-    gsap.fromTo(
-      shots[i],
-      { x: dx, y: dy, scale: 0.12, opacity: 0 },
-      { x: 0, y: 0, scale: 1, opacity: 1, duration: dur(1.1), delay: dur(delay), ease: "power3.out" }
-    );
-  }
-
   /* ---------------- navigation ---------------- */
   function go(i: number, first = false) {
     S.index = (i + comps.length) % comps.length;
     showItem(S.index, !first);
     const to = target();
-    moveTo(to, first ? 1.4 : 1.15);
+    if (first) moveTo(to, 1.2);
     light(S.index);
-    flyShot(S.index, to, first ? 0.75 : 0.45);
+    present(S.index, to, first ? 0.75 : 0.15);
   }
 
   function open(i = 0) {
@@ -168,8 +188,10 @@ export function mountRobusComponents(root: HTMLElement) {
   function close() {
     if (!S.open) return;
     S.open = false;
+    turn++;
     root.dataset.state = "idle";
     light(null);
+    refreshRun();
     moveTo(target(), 1.2);
   }
 
@@ -190,10 +212,26 @@ export function mountRobusComponents(root: HTMLElement) {
     el.addEventListener("click", () => open(i));
   };
   $$("[data-rx-pick]").forEach((b) => preview(b, Number(b.dataset.rxPick)));
-  $$("[data-rx-dot]").forEach((b) => preview(b, Number(b.dataset.rxDot)));
+  dots.forEach((b) => preview(b, Number(b.dataset.rxDot)));
 
-  let visible = false;
-  new IntersectionObserver(([en]) => (visible = en.isIntersecting), { threshold: 0.01 }).observe(root);
+  new IntersectionObserver(
+    ([en]) => {
+      visible = en.isIntersecting;
+      refreshRun();
+    },
+    { threshold: 0.01 }
+  ).observe(root);
+  // get the 3D ready shortly before the section scrolls into view
+  const near = new IntersectionObserver(
+    ([en]) => {
+      if (!en.isIntersecting) return;
+      near.disconnect();
+      getViewer();
+    },
+    { rootMargin: "100% 0px" }
+  );
+  near.observe(root);
+
   addEventListener("keydown", (e) => {
     if (!S.open || !visible) return;
     if (e.key === "ArrowRight") go(S.index + 1);
